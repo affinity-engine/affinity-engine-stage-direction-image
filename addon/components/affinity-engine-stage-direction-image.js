@@ -7,8 +7,7 @@ import { DirectableComponentMixin } from 'affinity-engine-stage';
 const {
   Component,
   computed,
-  get,
-  observer
+  get
 } = Ember;
 
 const configurationTiers = [
@@ -26,46 +25,24 @@ export default Component.extend(DirectableComponentMixin, {
   hook: 'affinity_engine_stage_direction_image',
 
   config: multiton('affinity-engine/config', 'engineId'),
-  translator: registrant('affinity-engine/translator'),
+  preloader: registrant('affinity-engine/preloader'),
 
   animationAdapter: configurable(configurationTiers, 'animationLibrary'),
   caption: configurable(configurationTiers, 'caption'),
   imageCategory: configurable(configurationTiers, 'imageCategory'),
-  imageElement: configurable(configurationTiers, 'imageElement'),
   src: configurable(configurationTiers, 'src'),
   transitions: deepArrayConfigurable(configurationTiers, 'directable.attrs.transitions'),
 
-  didInsertElement(...args) {
-    this._super(...args);
-
-    const captionTranslation = get(this, 'captionTranslation');
-    const image = get(this, 'image');
-    const $image = this.$(image).clone();
-
-    $image.addClass('ae-stage-direction-image');
-    $image.attr('alt', captionTranslation);
-
-    this.$('.ember-animation-box-active-instance .ae-image-container').append($image);
-  },
-
-  captionTranslation: computed('directable.attrs.fixture.id', 'caption', 'imageCategory', {
+  imageElement: computed('directable.attrs.fixture.src', {
     get() {
-      const caption = get(this, 'caption.key') || get(this, 'caption');
-      const key = caption || `${get(this, 'imageCategory')}.${get(this, 'directable.attrs.fixture.id')}`;
+      const preloader = get(this, 'preloader');
 
-      return get(this, 'translator').translate(key, get(this, 'caption.options')) || caption;
+      if (get(preloader, 'isPlaceholder')) { return; }
+
+      const fixture = get(this, 'directable.attrs.fixture');
+      const imageId = preloader.idFor(fixture, 'src');
+
+      return preloader.getElement(imageId);
     }
-  }).readOnly(),
-
-  image: computed({
-    get() {
-      return get(this, 'imageElement') || `<img src="${get(this, 'src')}">`;
-    }
-  }).readOnly(),
-
-  changeCaption: observer('captionTranslation', function() {
-    const caption = get(this, 'captionTranslation');
-
-    this.$('img').attr('alt', caption);
   })
 });

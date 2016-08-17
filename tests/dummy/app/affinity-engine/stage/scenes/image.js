@@ -28,7 +28,7 @@ export default Scene.extend({
     await script.image({
       id: 'beach-night',
       caption: 'beach during the night',
-      src: 'engine/images/beach-night.jpg'
+      src: 'affinity-engine/images/beach-night.jpg'
     });
   }
 });

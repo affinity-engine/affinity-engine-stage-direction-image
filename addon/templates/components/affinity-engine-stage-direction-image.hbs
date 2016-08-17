@@ -1,3 +1,11 @@
 {{#ember-animation-box classNames="ae-hidden" animationAdapter=animationAdapter transitions=transitions resolve=(action resolve)}}
-  <div class="ae-image-container"></div>
+  {{affinity-engine-stage-direction-image-frame
+    caption=caption
+    fixtureId=directable.attrs.fixture.id
+    imageCategory=imageCategory
+    imageElement=imageElement
+    src=src
+    engineId=engineId
+    windowId=windowId
+  }}
 {{/ember-animation-box}}

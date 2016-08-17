@@ -20,21 +20,10 @@ export default Direction.extend({
   _setup(fixtureOrId) {
     this._entryPoint();
 
-    const fixtureStore = get(this, 'fixtureStore');
-    const fixture = typeOf(fixtureOrId) === 'object' ? fixtureOrId : fixtureStore.find('images', fixtureOrId);
-    const id = get(fixture, 'id');
-    const preloader = get(this, 'preloader');
+    const fixture = this._findFixture(fixtureOrId);
 
-    if (!get(preloader, 'isPlaceholder')) {
-      const imageId = preloader.idFor(fixture, 'src');
-      const imageElement = preloader.getElement(imageId);
-
-      set(fixture, 'imageElement', imageElement);
-    }
-
-    set(this, 'attrs.fixture', fixture);
     set(this, 'attrs.imageCategory', 'images');
-    set(this, 'id', id);
+    set(this, 'attrs.fixture', fixture);
 
     return this;
   },
@@ -58,7 +47,7 @@ export default Direction.extend({
 
     const transitions = get(this, 'attrs.transitions') || set(this, 'attrs.transitions', []);
 
-    transitions.pushObject(merge({ duration }, options));
+    transitions.push(merge({ duration }, options));
 
     return this;
   },
@@ -68,8 +57,23 @@ export default Direction.extend({
 
     const transitions = get(this, 'attrs.transitions') || set(this, 'attrs.transitions', []);
 
-    transitions.pushObject(merge({ duration, effect }, options));
+    transitions.push(merge({ duration, effect }, options));
 
     return this;
+  },
+
+  frame(fixtureOrId, options = {}) {
+    this._entryPoint();
+
+    const transitions = get(this, 'attrs.transitions') || set(this, 'attrs.transitions', []);
+    const fixture = this._findFixture(fixtureOrId);
+
+    transitions.push(merge({ fixture, in: { } }, options));
+
+    return this;
+  },
+
+  _findFixture(fixtureOrId) {
+    return  typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find('images', fixtureOrId);
   }
 });
