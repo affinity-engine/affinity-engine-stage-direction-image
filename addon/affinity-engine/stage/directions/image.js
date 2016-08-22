@@ -106,6 +106,6 @@ export default Direction.extend({
   },
 
   _findFixture(fixtureOrId) {
-    return typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find('images', fixtureOrId);
+    return typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find(get(this, 'attrs.imageCategory'), fixtureOrId);
   }
 });
