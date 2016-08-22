@@ -14,7 +14,7 @@ moduleForAcceptance('Acceptance | affinity-engine/stage/directions/image', {
 });
 
 test('Affinity Engine | stage | Directions | Image', function(assert) {
-  assert.expect(13);
+  assert.expect(16);
 
   visit('/image').then(() => {
     assert.ok($hook('affinity_engine_stage_direction_image').length > 0, 'image is rendered');
@@ -51,5 +51,11 @@ test('Affinity Engine | stage | Directions | Image', function(assert) {
   }).then(() => {
     assert.equal($hook('affinity_engine_stage_direction_image').length, 4, '`Image` can be passed a fixture directly');
     assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img`).attr('src').match('engine/images/beach-night.jpg'), 'the manually defined image src is set properly');
+
+    return step(100);
+  }).then(() => {
+    assert.equal($hook('affinity_engine_stage_direction_image').length, 4, '`frame` does not create a new image');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(0) img`).attr('src').match('engine/images/beach-night.jpg'), 'it changes the src of the image');
+    assert.equal(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(0) img`).attr('alt'), 'beach during the night', 'it changes the alt of the image');
   });
 });

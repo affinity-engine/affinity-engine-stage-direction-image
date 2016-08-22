@@ -34,7 +34,7 @@ export default Component.extend({
     }
   }).readOnly(),
 
-  image: computed({
+  image: computed('imageElement', 'src', {
     get() {
       return get(this, 'imageElement') || `<img src="${get(this, 'src')}">`;
     }

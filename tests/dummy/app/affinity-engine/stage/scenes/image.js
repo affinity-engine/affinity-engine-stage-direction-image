@@ -30,5 +30,8 @@ export default Scene.extend({
       caption: 'beach during the night',
       src: 'affinity-engine/images/beach-night.jpg'
     });
+
+    await step();
+    classroom.frame('beach-night');
   }
 });
