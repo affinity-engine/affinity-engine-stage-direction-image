@@ -29,6 +29,7 @@ export default Direction.extend({
   preloader: registrant('affinity-engine/preloader'),
 
   attrs: computed(() => new Object({
+    imageCategory: 'images',
     animationAdapter: configurable(configurationTiers, 'animationLibrary'),
     caption: configurable(configurationTiers, 'caption'),
     src: configurable(configurationTiers, 'src'),
@@ -40,7 +41,6 @@ export default Direction.extend({
 
     const fixture = this._findFixture(fixtureOrId);
 
-    set(this, 'attrs.imageCategory', 'images');
     set(this, 'attrs.fixture', fixture);
 
     return this;
