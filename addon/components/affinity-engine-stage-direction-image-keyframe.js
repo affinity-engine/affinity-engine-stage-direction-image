@@ -25,10 +25,10 @@ export default Component.extend({
     this.$().empty().append($image);
   },
 
-  captionTranslation: computed('fixtureId', 'caption', 'imageCategory', {
+  captionTranslation: computed('keyframeId', 'caption', {
     get() {
       const caption = get(this, 'caption.key') || get(this, 'caption');
-      const key = caption || `${get(this, 'imageCategory')}.${get(this, 'fixtureId')}`;
+      const key = caption || `keyframes.${get(this, 'keyframeId')}`;
 
       return get(this, 'translator').translate(key, get(this, 'caption.options')) || caption;
     }

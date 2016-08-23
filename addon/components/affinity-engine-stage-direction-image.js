@@ -21,19 +21,18 @@ export default Component.extend(DirectableComponentMixin, {
 
   animationAdapter: alias('directable.animationAdapter'),
   caption: alias('directable.caption'),
-  fixture: alias('directable.fixture'),
-  imageCategory: alias('directable.imageCategory'),
+  keyframe: alias('directable.keyframe'),
   src: alias('directable.src'),
   transitions: alias('directable.transitions'),
 
-  imageElement: computed('fixture.src', {
+  imageElement: computed('keyframe.src', {
     get() {
       const preloader = get(this, 'preloader');
 
       if (get(preloader, 'isPlaceholder')) { return; }
 
-      const fixture = get(this, 'fixture');
-      const imageId = preloader.idFor(fixture, 'src');
+      const keyframe = get(this, 'keyframe');
+      const imageId = preloader.idFor(keyframe, 'src');
 
       return preloader.getElement(imageId);
     }

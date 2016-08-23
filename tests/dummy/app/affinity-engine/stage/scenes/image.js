@@ -22,16 +22,18 @@ export default Scene.extend({
     await classroom2.transition({ opacity: 0.6 });
 
     await step();
-    await script.image('beach-day');
+    const beach = await script.image('beach');
 
     await step();
     await script.image({
-      id: 'beach-night',
-      caption: 'beach during the night',
-      src: 'affinity-engine/images/beach-night.jpg'
+      defaultKeyframe: {
+        id: 'beach-night',
+        caption: 'beach during the night',
+        src: 'affinity-engine/images/beach-night.jpg'
+      }
     });
 
     await step();
-    classroom2.frame('beach-night');
+    beach.keyframe('night');
   }
 });

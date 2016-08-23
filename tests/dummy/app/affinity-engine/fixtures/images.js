@@ -1,13 +1,11 @@
 export default [{
   id: 'classroom',
-  caption: 'Classroom',
-  src: 'affinity-engine/images/classroom.png'
+  defaultKeyframe: 'classroom'
 }, {
-  id: 'beach-day',
-  caption: 'beach during the day',
-  src: 'affinity-engine/images/beach-day.jpg'
-}, {
-  id: 'beach-night',
-  caption: 'beach during the night',
-  src: 'affinity-engine/images/beach-night.jpg'
+  id: 'beach',
+  defaultKeyframe: 'beach-day',
+  keyframes: {
+    day: 'beach-day',
+    night: 'beach-night'
+  }
 }];

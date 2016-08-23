@@ -26,7 +26,8 @@ export default Direction.extend({
 
   _configurationTiers: [
     'attrs',
-    'attrs.fixture',
+    'attrs.keyframe',
+    'attrs.keyframeParent',
     'config.attrs.component.stage.direction.image',
     'config.attrs.component.stage',
     'config.attrs'
@@ -43,10 +44,9 @@ export default Direction.extend({
       const configurationTiers = get(this, '_configurationTiers');
 
       return {
-        imageCategory: 'images',
         animationAdapter: configurable(configurationTiers, 'animationLibrary'),
         caption: configurable(configurationTiers, 'caption'),
-        fixture: configurable(configurationTiers, 'fixture'),
+        keyframe: configurable(configurationTiers, 'keyframe'),
         src: configurable(configurationTiers, 'src'),
         transitions: deepArrayConfigurable(configurationTiers, 'attrs.transitions', 'transition')
       };
@@ -56,9 +56,10 @@ export default Direction.extend({
   _setup(fixtureOrId) {
     this._entryPoint();
 
-    const fixture = this._findFixture(fixtureOrId);
+    const image = this._findFixture('images', fixtureOrId);
 
-    set(this, 'attrs.fixture', fixture);
+    set(this, 'attrs.keyframeParent', image);
+    set(this, 'attrs.keyframe', this._findKeyframe(image));
 
     return this;
   },
@@ -97,11 +98,12 @@ export default Direction.extend({
     return this;
   },
 
-  frame(fixtureOrId, transition = {}) {
+  keyframe(fixtureOrIdOrAlias, transition = {}) {
     this._entryPoint();
 
     const transitions = get(this, 'attrs.transitions');
-    const fixture = this._findFixture(fixtureOrId);
+    const keyframeParent = get(this, 'attrs.keyframeParent');
+    const keyframe = this._findKeyframe(keyframeParent, fixtureOrIdOrAlias);
 
     if (isBlank(transition.crossFade)) {
       transition.crossFade = {};
@@ -114,8 +116,8 @@ export default Direction.extend({
     }
 
     transition.crossFade.cb = () => {
-      set(this, 'attrs.fixture', fixture);
-      set(this, 'directable.attrs.fixture', fixture);
+      set(this, 'attrs.keyframe', keyframe);
+      set(this, 'directable.attrs.keyframe', keyframe);
     };
 
     transitions.push(transition);
@@ -123,7 +125,13 @@ export default Direction.extend({
     return this;
   },
 
-  _findFixture(fixtureOrId) {
-    return typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find('images', fixtureOrId);
+  _findFixture(type, fixtureOrId) {
+    return typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find(type, fixtureOrId);
+  },
+
+  _findKeyframe(parentFixture, fixtureOrIdOrAlias) {
+    const fixtureOrId = get(parentFixture, `keyframes.${fixtureOrIdOrAlias}`) || fixtureOrIdOrAlias || get(parentFixture, 'defaultKeyframe');
+
+    return typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find('keyframes', fixtureOrId);
   }
 });
