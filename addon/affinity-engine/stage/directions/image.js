@@ -47,6 +47,7 @@ export default Direction.extend({
         animationAdapter: configurable(configurationTiers, 'animationLibrary'),
         caption: configurable(configurationTiers, 'caption'),
         keyframe: configurable(configurationTiers, 'keyframe'),
+        keyframeParent: configurable(configurationTiers, 'keyframeParent'),
         src: configurable(configurationTiers, 'src'),
         transitions: deepArrayConfigurable(configurationTiers, 'attrs.transitions', 'transition')
       };
@@ -129,8 +130,8 @@ export default Direction.extend({
     return typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find(type, fixtureOrId);
   },
 
-  _findChildFixture(type, parentFixture, fixtureOrIdOrAlias) {
-    const fixtureOrId = get(parentFixture, `keyframes.${fixtureOrIdOrAlias}`) || fixtureOrIdOrAlias || get(parentFixture, 'defaultKeyframe');
+  _findChildFixture(type, parent, fixtureOrIdOrAlias) {
+    const fixtureOrId = get(parent, `keyframes.${fixtureOrIdOrAlias}`) || fixtureOrIdOrAlias || get(parent, 'defaultKeyframe');
 
     return typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find(type, fixtureOrId);
   }
