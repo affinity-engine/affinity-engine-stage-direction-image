@@ -59,7 +59,7 @@ export default Direction.extend({
     const image = this._findFixture('images', fixtureOrId);
 
     set(this, 'attrs.keyframeParent', image);
-    set(this, 'attrs.keyframe', this._findKeyframe(image));
+    set(this, 'attrs.keyframe', this._findChildFixture('keyframes', image));
 
     return this;
   },
@@ -103,7 +103,7 @@ export default Direction.extend({
 
     const transitions = get(this, 'attrs.transitions');
     const keyframeParent = get(this, 'attrs.keyframeParent');
-    const keyframe = this._findKeyframe(keyframeParent, fixtureOrIdOrAlias);
+    const keyframe = this._findChildFixture('keyframes', keyframeParent, fixtureOrIdOrAlias);
 
     if (isBlank(transition.crossFade)) {
       transition.crossFade = {};
@@ -129,9 +129,9 @@ export default Direction.extend({
     return typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find(type, fixtureOrId);
   },
 
-  _findKeyframe(parentFixture, fixtureOrIdOrAlias) {
+  _findChildFixture(type, parentFixture, fixtureOrIdOrAlias) {
     const fixtureOrId = get(parentFixture, `keyframes.${fixtureOrIdOrAlias}`) || fixtureOrIdOrAlias || get(parentFixture, 'defaultKeyframe');
 
-    return typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find('keyframes', fixtureOrId);
+    return typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find(type, fixtureOrId);
   }
 });
