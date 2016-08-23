@@ -32,6 +32,6 @@ export default Scene.extend({
     });
 
     await step();
-    classroom.frame('beach-night');
+    classroom2.frame('beach-night');
   }
 });

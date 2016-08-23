@@ -55,7 +55,7 @@ test('Affinity Engine | stage | Directions | Image', function(assert) {
     return step(100);
   }).then(() => {
     assert.equal($hook('affinity_engine_stage_direction_image').length, 4, '`frame` does not create a new image');
-    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(0) img`).attr('src').match('engine/images/beach-night.jpg'), 'it changes the src of the image');
-    assert.equal(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(0) img`).attr('alt'), 'beach during the night', 'it changes the alt of the image');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(1) img`).attr('src').match('engine/images/beach-night.jpg'), 'it changes the src of the image');
+    assert.equal(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(1) img`).attr('alt'), 'beach during the night', 'it changes the alt of the image');
   });
 });

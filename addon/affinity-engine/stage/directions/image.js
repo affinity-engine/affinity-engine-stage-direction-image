@@ -4,37 +4,54 @@ import { configurable, deepArrayConfigurable, registrant } from 'affinity-engine
 import { Direction } from 'affinity-engine-stage';
 
 const {
+  assign,
   computed,
   get,
   isBlank,
-  merge,
   set,
   typeOf
 } = Ember;
-
-const configurationTiers = [
-  '_attrs',
-  'fixture',
-  'config.attrs.component.stage.direction.image',
-  'config.attrs.component.stage',
-  'config.attrs'
-];
 
 export default Direction.extend({
   componentPath: 'affinity-engine-stage-direction-image',
   layer: 'engine.stage.foreground.image',
 
+  attrs: computed(() => Ember.Object.create({
+    transitions: []
+  })),
+
   config: multiton('affinity-engine/config', 'engineId'),
   fixtureStore: multiton('affinity-engine/fixture-store', 'engineId'),
   preloader: registrant('affinity-engine/preloader'),
 
-  attrs: computed(() => new Object({
-    imageCategory: 'images',
-    animationAdapter: configurable(configurationTiers, 'animationLibrary'),
-    caption: configurable(configurationTiers, 'caption'),
-    src: configurable(configurationTiers, 'src'),
-    transitions: deepArrayConfigurable(configurationTiers, '_attrs.transitions')
-  })),
+  _configurationTiers: [
+    'attrs',
+    'attrs.fixture',
+    'config.attrs.component.stage.direction.image',
+    'config.attrs.component.stage',
+    'config.attrs'
+  ],
+
+  _directableDefinition: computed('_baseImageDirectableDefinition', {
+    get() {
+      return get(this, '_baseImageDirectableDefinition');
+    }
+  }),
+
+  _baseImageDirectableDefinition: computed('_configurationTiers', {
+    get() {
+      const configurationTiers = get(this, '_configurationTiers');
+
+      return {
+        imageCategory: 'images',
+        animationAdapter: configurable(configurationTiers, 'animationLibrary'),
+        caption: configurable(configurationTiers, 'caption'),
+        fixture: configurable(configurationTiers, 'fixture'),
+        src: configurable(configurationTiers, 'src'),
+        transitions: deepArrayConfigurable(configurationTiers, 'attrs.transitions', 'transition')
+      };
+    }
+  }),
 
   _setup(fixtureOrId) {
     this._entryPoint();
@@ -47,13 +64,15 @@ export default Direction.extend({
   },
 
   _reset() {
-    return this._super({ transitions: Ember.A() });
+    this._super();
+
+    get(this, 'attrs.transitions').length = 0;
   },
 
   caption(caption) {
     this._entryPoint();
 
-    set(this, '_attrs.caption', caption);
+    set(this, 'attrs.caption', caption);
 
     return this;
   },
@@ -61,9 +80,9 @@ export default Direction.extend({
   delay(duration, options = {}) {
     this._entryPoint();
 
-    const transitions = get(this, '_attrs.transitions') || set(this, '_attrs.transitions', []);
+    const transitions = get(this, 'attrs.transitions');
 
-    transitions.push(merge({ duration }, options));
+    transitions.push(assign({ duration }, options));
 
     return this;
   },
@@ -71,9 +90,9 @@ export default Direction.extend({
   transition(effect, duration, options = {}) {
     this._entryPoint();
 
-    const transitions = get(this, '_attrs.transitions') || set(this, '_attrs.transitions', []);
+    const transitions = get(this, 'attrs.transitions');
 
-    transitions.push(merge({ duration, effect }, options));
+    transitions.push(assign({ duration, effect }, options));
 
     return this;
   },
@@ -81,7 +100,7 @@ export default Direction.extend({
   frame(fixtureOrId, transition = {}) {
     this._entryPoint();
 
-    const transitions = get(this, '_attrs.transitions') || set(this, '_attrs.transitions', []);
+    const transitions = get(this, 'attrs.transitions');
     const fixture = this._findFixture(fixtureOrId);
 
     if (isBlank(transition.crossFade)) {
@@ -96,16 +115,15 @@ export default Direction.extend({
 
     transition.crossFade.cb = () => {
       set(this, 'attrs.fixture', fixture);
-      set(this, 'directable.fixture', fixture);
-      set(this, 'directable.caption', get(this, 'attrs.caption'));
+      set(this, 'directable.attrs.fixture', fixture);
     };
 
-    transitions.pushObject(transition);
+    transitions.push(transition);
 
     return this;
   },
 
   _findFixture(fixtureOrId) {
-    return typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find(get(this, 'attrs.imageCategory'), fixtureOrId);
+    return typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find('images', fixtureOrId);
   }
 });
