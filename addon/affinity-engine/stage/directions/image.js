@@ -14,11 +14,14 @@ const {
 
 export default Direction.extend({
   componentPath: 'affinity-engine-stage-direction-image',
+  keyframeParentCategory: 'images',
   layer: 'engine.stage.foreground.image',
 
   attrs: computed(() => Ember.Object.create({
     transitions: []
   })),
+
+  keyframeKeys: computed(() => { return {}; }),
 
   config: multiton('affinity-engine/config', 'engineId'),
   fixtureStore: multiton('affinity-engine/fixture-store', 'engineId'),
@@ -57,10 +60,10 @@ export default Direction.extend({
   _setup(fixtureOrId) {
     this._entryPoint();
 
-    const image = this._findFixture('images', fixtureOrId);
+    const image = this._findFixture(get(this, 'keyframeParentCategory'), fixtureOrId);
 
     set(this, 'attrs.keyframeParent', image);
-    set(this, 'attrs.keyframe', this._findChildFixture('keyframes', image));
+    set(this, 'attrs.keyframe', this._findKeyframe(image));
 
     return this;
   },
@@ -99,12 +102,12 @@ export default Direction.extend({
     return this;
   },
 
-  keyframe(fixtureOrIdOrAlias, transition = {}) {
+  keyframe(fixtureOrKeys, transition = {}) {
     this._entryPoint();
 
     const transitions = get(this, 'attrs.transitions');
     const keyframeParent = get(this, 'attrs.keyframeParent');
-    const keyframe = this._findChildFixture('keyframes', keyframeParent, fixtureOrIdOrAlias);
+    const keyframe = this._findKeyframe(keyframeParent, fixtureOrKeys);
     const crossFadeTransition = this._generateCrossFade(transition);
 
     crossFadeTransition.crossFade.cb = () => {
@@ -135,9 +138,18 @@ export default Direction.extend({
     return typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find(type, fixtureOrId);
   },
 
-  _findChildFixture(type, parent, fixtureOrIdOrAlias) {
-    const fixtureOrId = get(parent, `keyframes.${fixtureOrIdOrAlias}`) || fixtureOrIdOrAlias || get(parent, 'defaultKeyframe');
+  _findKeyframe(parent, newKeys = {}) {
+    const query = assign(get(this, 'keyframeKeys'), newKeys);
+    const queryKeys = Object.keys(query);
+    const keyframe = Ember.A(get(parent, 'keyframes')).find((keyframe) => {
+      return Object.keys(keyframe).filter((key) => key !== 'id').concat(queryKeys).every((key) => {
+        if (query[key] === undefined) { query[key] = 'default'; }
+        if (keyframe[key] === undefined) { keyframe[key] = 'default'; }
 
-    return typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find(type, fixtureOrId);
+        return query[key] === keyframe[key];
+      });
+    });
+
+    return this._findFixture('keyframes', get(keyframe, 'id'));
   }
 });

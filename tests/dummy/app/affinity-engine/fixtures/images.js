@@ -1,11 +1,13 @@
 export default [{
   id: 'classroom',
-  defaultKeyframe: 'classroom'
+  keyframes: [
+    { id: 'classroom' }
+  ]
 }, {
   id: 'beach',
-  defaultKeyframe: 'beach-day',
-  keyframes: {
-    day: 'beach-day',
-    night: 'beach-night'
-  }
+  keyframes: [
+    { id: 'beach-day' },
+    { id: 'beach-night', time: 'night' },
+    { id: 'beach-night', time: 'night', variant: 'foo' }
+  ]
 }];

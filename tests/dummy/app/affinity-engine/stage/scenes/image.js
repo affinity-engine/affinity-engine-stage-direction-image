@@ -26,14 +26,15 @@ export default Scene.extend({
 
     await step();
     await script.image({
-      defaultKeyframe: {
-        id: 'beach-night',
-        caption: 'beach during the night',
-        src: 'affinity-engine/images/beach-night.jpg'
-      }
+      keyframes: [{
+        id: {
+          caption: 'beach during the night',
+          src: 'affinity-engine/images/beach-night.jpg'
+        }
+      }]
     });
 
     await step();
-    beach.keyframe('night');
+    beach.keyframe({ time: 'night' });
   }
 });
