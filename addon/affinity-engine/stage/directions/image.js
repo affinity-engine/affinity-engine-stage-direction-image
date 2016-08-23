@@ -105,7 +105,19 @@ export default Direction.extend({
     const transitions = get(this, 'attrs.transitions');
     const keyframeParent = get(this, 'attrs.keyframeParent');
     const keyframe = this._findChildFixture('keyframes', keyframeParent, fixtureOrIdOrAlias);
+    const crossFadeTransition = this._generateCrossFade(transition);
 
+    crossFadeTransition.crossFade.cb = () => {
+      set(this, 'attrs.keyframe', keyframe);
+      set(this, 'directable.attrs.keyframe', keyframe);
+    };
+
+    transitions.push(crossFadeTransition);
+
+    return this;
+  },
+
+  _generateCrossFade(transition) {
     if (isBlank(transition.crossFade)) {
       transition.crossFade = {};
     }
@@ -116,14 +128,7 @@ export default Direction.extend({
       transition.crossFade.out = { effect: { opacity: 0 } };
     }
 
-    transition.crossFade.cb = () => {
-      set(this, 'attrs.keyframe', keyframe);
-      set(this, 'directable.attrs.keyframe', keyframe);
-    };
-
-    transitions.push(transition);
-
-    return this;
+    return transition;
   },
 
   _findFixture(type, fixtureOrId) {
