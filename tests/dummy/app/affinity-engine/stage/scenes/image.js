@@ -4,7 +4,7 @@ export default Scene.extend({
   name: 'Image Direction Test',
 
   start: async function(script) {
-    const classroom = script.image('classroom');
+    const classroom = script.image('classroom').classNames('foofoo');
 
     await step();
     classroom.transition({ opacity: 0.2 });

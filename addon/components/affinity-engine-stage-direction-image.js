@@ -14,13 +14,15 @@ const { alias } = computed;
 export default Component.extend(DirectableComponentMixin, {
   layout,
 
-  classNames: ['ae-stage-direction-image-container'],
+  classNames: ['ae-stage-direction-image-type'],
+  classNameBindings: ['customClassNames'],
   hook: 'affinity_engine_stage_direction_image',
 
   preloader: registrant('affinity-engine/preloader'),
 
   animationAdapter: alias('directable.animationAdapter'),
   caption: alias('directable.caption'),
+  customClassNames: alias('directable.customClassNames'),
   keyframe: alias('directable.keyframe'),
   src: alias('directable.src'),
   transitions: alias('directable.transitions'),

@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import multiton from 'ember-multiton-service';
-import { configurable, deepArrayConfigurable, registrant } from 'affinity-engine';
+import { classNamesConfigurable, configurable, deepArrayConfigurable, registrant } from 'affinity-engine';
 import { Direction } from 'affinity-engine-stage';
 
 const {
@@ -42,13 +42,14 @@ export default Direction.extend({
     }
   }),
 
-  _baseImageDirectableDefinition: computed('_configurationTiers', {
+  _baseImageDirectableDefinition: computed('_configurationTiers',  {
     get() {
       const configurationTiers = get(this, '_configurationTiers');
 
       return {
         animationAdapter: configurable(configurationTiers, 'animationLibrary'),
         caption: configurable(configurationTiers, 'caption'),
+        customClassNames: classNamesConfigurable(configurationTiers, 'classNames'),
         keyframe: configurable(configurationTiers, 'keyframe'),
         keyframeParent: configurable(configurationTiers, 'keyframeParent'),
         src: configurable(configurationTiers, 'src'),
@@ -78,6 +79,14 @@ export default Direction.extend({
     this._entryPoint();
 
     set(this, 'attrs.caption', caption);
+
+    return this;
+  },
+
+  classNames(classNames) {
+    this._entryPoint();
+
+    set(this, 'attrs.classNames', classNames);
 
     return this;
   },
