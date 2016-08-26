@@ -1,4 +1,9 @@
-{{#ember-animation-box classNames="ae-hidden" animationAdapter=animationAdapter transitions=transitions resolve=(action resolve)}}
+{{#affinity-engine-animation-box-wrapper
+  animationAdapter=animationAdapter
+  classNames="ae-hidden"
+  transitions=transitions
+  didCompleteQueue=(action resolve)
+}}
   {{affinity-engine-stage-direction-image-keyframe
     caption=caption
     keyframeId=keyframe.id
@@ -7,4 +12,4 @@
     engineId=engineId
     windowId=windowId
   }}
-{{/ember-animation-box}}
+{{/affinity-engine-animation-box-wrapper}}
