@@ -8,7 +8,7 @@ const {
 } = Ember;
 
 export default Component.extend({
-  classNames: ['ae-stage-direction-image-frame'],
+  classNames: ['ae-stage-direction-image-frame-container'],
   hook: 'affinity_engine_stage_direction_image_frame',
 
   translator: registrant('affinity-engine/translator'),
@@ -20,6 +20,7 @@ export default Component.extend({
     const image = get(this, 'image');
     const $image = this.$(image).clone();
 
+    $image.addClass('ae-stage-direction-image-frame');
     $image.attr('alt', captionTranslation);
 
     this.$().empty().append($image);
