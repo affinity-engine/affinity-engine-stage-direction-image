@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import multiton from 'ember-multiton-service';
-import { classNamesConfigurable, configurable, deepArrayConfigurable, registrant } from 'affinity-engine';
-import { Direction } from 'affinity-engine-stage';
+import { classNamesConfigurable, configurable, registrant } from 'affinity-engine';
+import { Direction, cmd } from 'affinity-engine-stage';
 
 const {
   assign,
@@ -18,7 +18,7 @@ export default Direction.extend({
   layer: 'engine.stage.foreground.image',
 
   attrs: computed(() => Ember.Object.create({
-    transitions: []
+    transitions: Ember.A()
   })),
 
   keyframeKeys: computed(() => { return {}; }),
@@ -53,67 +53,39 @@ export default Direction.extend({
         keyframe: configurable(configurationTiers, 'keyframe'),
         keyframeParent: configurable(configurationTiers, 'keyframeParent'),
         src: configurable(configurationTiers, 'src'),
-        transitions: deepArrayConfigurable(configurationTiers, 'attrs.transitions', 'transition')
+        transitions: configurable(configurationTiers, 'transitions')
       };
     }
   }),
 
-  _setup(fixtureOrId) {
-    this._entryPoint();
-
+  _setup: cmd({ directable: true }, function(fixtureOrId) {
     const image = this._findFixture(get(this, 'keyframeParentCategory'), fixtureOrId);
 
     set(this, 'attrs.keyframeParent', image);
     set(this, 'attrs.keyframe', this._findKeyframe(image));
+  }),
 
-    return this;
-  },
-
-  _reset() {
-    this._super();
-
-    get(this, 'attrs.transitions').length = 0;
-  },
-
-  caption(caption) {
-    this._entryPoint();
-
+  caption: cmd(function(caption) {
     set(this, 'attrs.caption', caption);
+  }),
 
-    return this;
-  },
-
-  classNames(classNames) {
-    this._entryPoint();
-
+  classNames: cmd(function(classNames) {
     set(this, 'attrs.classNames', classNames);
+  }),
 
-    return this;
-  },
-
-  delay(duration, options = {}) {
-    this._entryPoint();
-
+  delay: cmd({ async: true }, function(duration, options = {}) {
     const transitions = get(this, 'attrs.transitions');
 
-    transitions.push(assign({ duration }, options));
+    transitions.pushObject(assign({ duration }, options));
+  }),
 
-    return this;
-  },
-
-  transition(effect, duration, options = {}) {
-    this._entryPoint();
-
+  transition: cmd({ async: true }, function(effect, duration, options = {}) {
     const transitions = get(this, 'attrs.transitions');
 
-    transitions.push(assign({ duration, effect }, options));
+    transitions.pushObject(assign({ duration, effect }, options));
+  }),
 
-    return this;
-  },
-
-  keyframe(fixtureOrKeys, transition = {}) {
-    this._entryPoint();
-
+  keyframe: cmd({ async: true }, function(fixtureOrKeys, transition = {}) {
     const transitions = get(this, 'attrs.transitions');
     const keyframeParent = get(this, 'attrs.keyframeParent');
     const keyframe = this._findKeyframe(keyframeParent, fixtureOrKeys);
@@ -124,10 +96,8 @@ export default Direction.extend({
       set(this, 'directable.attrs.keyframe', keyframe);
     };
 
-    transitions.push(crossFadeTransition);
-
-    return this;
-  },
+    transitions.pushObject(crossFadeTransition);
+  }),
 
   _generateCrossFade(transition) {
     if (isBlank(transition.crossFade)) {

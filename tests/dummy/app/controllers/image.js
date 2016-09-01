@@ -7,10 +7,7 @@ const { Controller } = Ember;
 export default Controller.extend({
   config: {
     animationLibrary: 'velocity',
-    transition: {
-      effect: { opacity: 0.1 },
-      duration: 100
-    },
+    transitions: Ember.A(),
     component: {
       stage: {
         direction: {
