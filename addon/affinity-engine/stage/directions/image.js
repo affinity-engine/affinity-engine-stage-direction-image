@@ -31,6 +31,8 @@ export default Direction.extend({
     'attrs',
     'attrs.keyframe',
     'attrs.keyframeParent',
+    'attrs.links',
+    'attrs.fixtures.image',
     'config.attrs.component.stage.direction.image',
     'config.attrs.component.stage',
     'config.attrs'
@@ -61,6 +63,7 @@ export default Direction.extend({
   _setup: cmd({ directable: true }, function(fixtureOrId) {
     const image = this._findFixture(get(this, 'keyframeParentCategory'), fixtureOrId);
 
+    this._linkFixture(image);
     set(this, 'attrs.keyframeParent', image);
     set(this, 'attrs.keyframe', this._findKeyframe(image));
   }),
