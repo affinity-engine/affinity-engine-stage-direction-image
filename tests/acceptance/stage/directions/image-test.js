@@ -14,7 +14,7 @@ moduleForAcceptance('Acceptance | affinity-engine/stage/directions/image', {
 });
 
 test('Affinity Engine | stage | Directions | Image', function(assert) {
-  assert.expect(17);
+  assert.expect(19);
 
   visit('/image').then(() => {
     assert.ok($hook('affinity_engine_stage_direction_image').length > 0, 'image is rendered by transition');
@@ -22,6 +22,14 @@ test('Affinity Engine | stage | Directions | Image', function(assert) {
     assert.equal(Ember.$(`${hook('affinity_engine_stage_direction_image')} img`).attr('alt'), 'Classroom', '`alt` is set by the fixture `caption`');
     assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')} img`).attr('src').match('engine/images/classroom.png'), 'it sets the `src` based on the associated fixture');
     assert.equal(parseFloat($hook('affinity_engine_stage_direction_image').children(hook('ember_animation_box')).css('opacity')).toFixed(1), 0, 'opacity starts at 0');
+
+    return step(100);
+  }).then(() => {
+    assert.equal(parseFloat($hook('affinity_engine_stage_direction_image').children(hook('ember_animation_box')).css('opacity')).toFixed(1), 1, '`fadeIn` sets opacity to 1');
+
+    return step(100);
+  }).then(() => {
+    assert.equal(parseFloat($hook('affinity_engine_stage_direction_image').children(hook('ember_animation_box')).css('opacity')).toFixed(1), 0, '`fadeOut` sets opacity to 0');
 
     return step(100);
   }).then(() => {

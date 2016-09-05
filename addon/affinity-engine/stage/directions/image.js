@@ -49,7 +49,7 @@ export default Direction.extend({
       const configurationTiers = get(this, '_configurationTiers');
 
       return {
-        animationAdapter: configurable(configurationTiers, 'animationLibrary'),
+        animationLibrary: configurable(configurationTiers, 'animationLibrary'),
         caption: configurable(configurationTiers, 'caption'),
         customClassNames: classNamesConfigurable(configurationTiers, 'classNames'),
         keyframe: configurable(configurationTiers, 'keyframe'),
@@ -82,6 +82,14 @@ export default Direction.extend({
     transitions.pushObject(assign({ duration }, options));
   }),
 
+  fadeIn: cmd({ async: true }, function(...args) {
+    this.transition({ opacity: 1 }, ...args);
+  }),
+
+  fadeOut: cmd({ async: true }, function(...args) {
+    this.transition({ opacity: 0 }, ...args);
+  }),
+
   transition: cmd({ async: true }, function(effect, duration, options = {}) {
     const transitions = get(this, 'attrs.transitions');
 
@@ -107,10 +115,16 @@ export default Direction.extend({
       transition.crossFade = {};
     }
     if (isBlank(transition.crossFade.in)) {
-      transition.crossFade.in = { effect: { opacity: 1 } };
+      transition.crossFade.in = { };
+    }
+    if (isBlank(transition.crossFade.in.effect)) {
+      transition.crossFade.in.effect = { opacity: 1 };
     }
     if (isBlank(transition.crossFade.out)) {
-      transition.crossFade.out = { effect: { opacity: 0 } };
+      transition.crossFade.out = { };
+    }
+    if (isBlank(transition.crossFade.out.effect)) {
+      transition.crossFade.out.effect = { opacity: 0 };
     }
 
     return transition;

@@ -8,6 +8,12 @@ export default Scene.extend({
     const classroom = script.image('classroom').classNames('foofoo');
 
     yield step();
+    yield classroom.fadeIn();
+
+    yield step();
+    yield classroom.fadeOut();
+
+    yield step();
     classroom.transition({ opacity: 0.2 });
 
     yield step();
