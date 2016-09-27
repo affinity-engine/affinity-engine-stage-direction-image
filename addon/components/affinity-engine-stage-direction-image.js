@@ -24,10 +24,9 @@ export default Component.extend(DirectableComponentMixin, {
   caption: alias('directable.caption'),
   customClassNames: alias('directable.customClassNames'),
   keyframe: alias('directable.keyframe'),
-  src: alias('directable.src'),
   transitions: alias('directable.transitions'),
 
-  imageElement: computed('keyframe.src', {
+  src: computed('keyframe.src', 'directable.src', {
     get() {
       const preloader = get(this, 'preloader');
 
@@ -36,7 +35,7 @@ export default Component.extend(DirectableComponentMixin, {
       const keyframe = get(this, 'keyframe');
       const imageId = preloader.idFor(keyframe, 'src');
 
-      return preloader.getElement(imageId);
+      return preloader.getElement(imageId, true) || get(this, 'directable.src');
     }
   })
 });

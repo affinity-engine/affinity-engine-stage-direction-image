@@ -18,7 +18,7 @@ export default Component.extend({
 
     const captionTranslation = get(this, 'captionTranslation');
     const image = get(this, 'image');
-    const $image = this.$(image).clone();
+    const $image = this.$(image);
 
     $image.addClass('ae-stage-direction-image-frame');
     $image.attr('alt', captionTranslation);
@@ -35,9 +35,9 @@ export default Component.extend({
     }
   }).readOnly(),
 
-  image: computed('imageElement', 'src', {
+  image: computed('src', {
     get() {
-      return get(this, 'imageElement') || `<img src="${get(this, 'src')}">`;
+      return `<img src="${get(this, 'src')}">`;
     }
   }).readOnly()
 });
