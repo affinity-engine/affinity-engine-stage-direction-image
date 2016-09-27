@@ -30,12 +30,14 @@ export default Component.extend(DirectableComponentMixin, {
     get() {
       const preloader = get(this, 'preloader');
 
-      if (get(preloader, 'isPlaceholder')) { return; }
+      if (get(preloader, 'isPlaceholder')) { return get(this, 'directable.src'); }
 
       const keyframe = get(this, 'keyframe');
       const imageId = preloader.idFor(keyframe, 'src');
+      const blob = preloader.getElement(imageId, true);
+      const urlCreator = window.URL || window.webkitURL;
 
-      return preloader.getElement(imageId, true) || get(this, 'directable.src');
+      return blob ? urlCreator.createObjectURL(blob) : get(this, 'directable.src');
     }
   })
 });
