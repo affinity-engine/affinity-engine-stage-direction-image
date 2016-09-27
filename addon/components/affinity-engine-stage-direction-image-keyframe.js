@@ -4,7 +4,8 @@ import { registrant } from 'affinity-engine';
 const {
   Component,
   computed,
-  get
+  get,
+  isPresent
 } = Ember;
 
 export default Component.extend({
@@ -17,14 +18,25 @@ export default Component.extend({
     this._super(...args);
 
     const captionTranslation = get(this, 'captionTranslation');
+    const heightRatio = get(this, 'heightRatio');
     const image = get(this, 'image');
     const $image = this.$(image);
 
     $image.addClass('ae-stage-direction-image-frame');
     $image.attr('alt', captionTranslation);
 
+    if (isPresent(heightRatio)) { $image.css('height', `${heightRatio}px`); }
+
     this.$().empty().append($image);
   },
+
+  heightRatio: computed('height', {
+    get() {
+      const height = get(this, 'height');
+
+      if (isPresent(height)) { return this.$().closest('.ae-stage-direction-image-type').height() * (height / 100); }
+    }
+  }),
 
   captionTranslation: computed('keyframeId', 'caption', {
     get() {

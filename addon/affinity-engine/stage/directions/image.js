@@ -52,6 +52,7 @@ export default Direction.extend({
         animationLibrary: configurable(configurationTiers, 'animationLibrary'),
         caption: configurable(configurationTiers, 'caption'),
         customClassNames: classNamesConfigurable(configurationTiers, 'classNames'),
+        height: configurable(configurationTiers, 'height'),
         keyframe: configurable(configurationTiers, 'keyframe'),
         keyframeParent: configurable(configurationTiers, 'keyframeParent'),
         src: configurable(configurationTiers, 'src'),
@@ -88,6 +89,10 @@ export default Direction.extend({
 
   fadeOut: cmd({ async: true }, function(...args) {
     this.transition({ opacity: 0 }, ...args);
+  }),
+
+  height: cmd(function(height) {
+    set(this, 'attrs.height', height);
   }),
 
   transition: cmd({ async: true }, function(effect, duration, options = {}) {

@@ -5,7 +5,9 @@ export default {
       direction: {
         image: {
           classNames: {
-            base: 'ae-figure'
+            base: 'ae-figure',
+            decorative: null,
+            structural: null
           },
           positions: {
             center: {

@@ -23,6 +23,7 @@ export default Component.extend(DirectableComponentMixin, {
   animationAdapter: alias('directable.animationAdapter'),
   caption: alias('directable.caption'),
   customClassNames: alias('directable.customClassNames'),
+  height: alias('directable.height'),
   keyframe: alias('directable.keyframe'),
   transitions: alias('directable.transitions'),
 

@@ -1,11 +1,12 @@
 {{#affinity-engine-animation-box-wrapper
   animationAdapter=animationLibrary
-  classNames="ae-hidden"
+  classNames="ae-hidden ae-animation-box-wrapper"
   transitions=transitions
   didCompleteQueue=(action resolve)
 }}
   {{affinity-engine-stage-direction-image-keyframe
     caption=caption
+    height=height
     keyframeId=keyframe.id
     src=src
     engineId=engineId
