@@ -27,10 +27,14 @@
     display: flex;
     position: absolute;
 
-    .ae-stage-direction-image-frame-container {
+    .ae-stage-direction-image-frame, .ae-stage-direction-image-frame-container, .ember-animation-box-active-instance {
       height: 100%;
       width: 100%;
+    }
+
+    .ae-stage-direction-image-frame {
       object-fit: cover;
+      object-position: 50% 50%;
 
       color: transparent;
     }
