@@ -10,14 +10,18 @@
     height: 100%;
     width: 100%;
 
+    .ember-animation-box-active-instance {
+      position: absolute;
+    }
+
     .ae-animation-box-wrapper {
       position: absolute;
       bottom: 0;
-      transform: translateX(-50%);
     }
 
     .ae-stage-direction-image-frame {
       max-width: none;
+      transform: translateX(-50%);
     }
   }
 

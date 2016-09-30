@@ -20,7 +20,7 @@ export default Component.extend(DirectableComponentMixin, {
 
   preloader: registrant('affinity-engine/preloader'),
 
-  animationAdapter: alias('directable.animationAdapter'),
+  animationLibrary: alias('directable.animationLibrary'),
   caption: alias('directable.caption'),
   customClassNames: alias('directable.customClassNames'),
   height: alias('directable.height'),
