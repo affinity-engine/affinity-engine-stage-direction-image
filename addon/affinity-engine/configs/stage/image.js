@@ -14,10 +14,11 @@ export default {
               left: '50%'
             },
             centerLeft: {
-              left: '35%'
+              left: '50%',
+              translateX: '-100%'
             },
             centerRight: {
-              left: '65%'
+              left: '50%'
             },
             left: {
               left: '20%'
