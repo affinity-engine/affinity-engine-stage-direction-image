@@ -14,12 +14,11 @@ moduleForAcceptance('Acceptance | affinity-engine/stage/directions/image', {
 });
 
 test('Affinity Engine | stage | Directions | Image', function(assert) {
-  assert.expect(19);
+  assert.expect(25);
 
   visit('/image').then(() => {
     assert.ok($hook('affinity_engine_stage_direction_image').length > 0, 'image is rendered by transition');
     assert.ok($hook('affinity_engine_stage_direction_image').hasClass('foofoo'), 'has custom class name');
-    assert.equal(Ember.$(`${hook('affinity_engine_stage_direction_image')} img`).attr('alt'), 'Classroom', '`alt` is set by the fixture `caption`');
     assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')} img`).attr('src').match('engine/images/classroom.png'), 'it sets the `src` based on the associated fixture');
     assert.equal(parseFloat($hook('affinity_engine_stage_direction_image').children(hook('ember_animation_box')).css('opacity')).toFixed(1), 0, 'opacity starts at 0');
 
@@ -41,10 +40,6 @@ test('Affinity Engine | stage | Directions | Image', function(assert) {
 
     return step(100);
   }).then(() => {
-    assert.equal(Ember.$(`${hook('affinity_engine_stage_direction_image')} img`).attr('alt'), 'foo', '`alt` can be set by direction function `caption`');
-
-    return step(100);
-  }).then(() => {
     assert.equal($hook('affinity_engine_stage_direction_image').length, 2, 'multiple instances of the same image can be rendered by setting `instance`');
 
     return step(100);
@@ -63,8 +58,25 @@ test('Affinity Engine | stage | Directions | Image', function(assert) {
 
     return step(100);
   }).then(() => {
-    assert.equal($hook('affinity_engine_stage_direction_image').length, 4, '`frame` does not create a new image');
+    assert.equal($hook('affinity_engine_stage_direction_image').length, 4, '`compose` does not create a new image');
     assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(2) img`).attr('src').match('engine/images/beach-night.jpg'), 'it changes the src of the image');
-    assert.equal(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(2) img`).attr('alt'), 'beach during the night', 'it changes the alt of the image');
+
+    return step(100);
+  }).then(() => {
+    assert.equal($hook('affinity_engine_stage_direction_image').length, 5, 'composed images can render');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(4) img`).length, 4, 'composed images consist of multiple frames');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(4) img:first`).attr('src').match('affinity-engine/images/diy-base.png'), 'it renders images in ascending order');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(4) img:nth(1)`).attr('src').match('affinity-engine/images/diy-default-lips.png'), 'it renders the default lips');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(4) img:last`).attr('src').match('affinity-engine/images/diy-default-hair.png'), 'last composed image correct');
+
+    return step(100);
+  }).then(() => {
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(4) img`).length, 5, '`compose` can add a new layer');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(4) img:nth(2)`).attr('src').match('affinity-engine/images/diy-embarrassed-lips.png'), 'it renders the embarrassed lips');
+
+    return step(100);
+  }).then(() => {
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(4) img`).length, 4, '`compose` can remove a layer');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(4) img:nth(1)`).attr('src').match('affinity-engine/images/diy-default-lips.png'), 'it returns to the default lips');
   });
 });

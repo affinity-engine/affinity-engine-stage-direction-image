@@ -11,7 +11,27 @@ export default [{
   caption: 'beach during the night',
   src: 'affinity-engine/images/beach-night.jpg'
 }, {
-  id: 'beach-night-foo',
-  caption: 'beach during the night, foo',
-  src: 'affinity-engine/images/beach-night-foo.jpg'
+  id: 'diy-base',
+  src: 'affinity-engine/images/diy-base.png'
+}, {
+  id: 'diy-default-hair',
+  src: 'affinity-engine/images/diy-default-hair.png'
+}, {
+  id: 'diy-default-lips',
+  src: 'affinity-engine/images/diy-default-lips.png'
+}, {
+  id: 'diy-default-eyes',
+  src: 'affinity-engine/images/diy-default-eyes.png'
+}, {
+  id: 'diy-default-nose',
+  src: 'affinity-engine/images/diy-default-nose.png'
+}, {
+  id: 'diy-blush',
+  src: 'affinity-engine/images/diy-blush.png'
+}, {
+  id: 'diy-embarrassed-lips',
+  src: 'affinity-engine/images/diy-embarrassed-lips.png'
+}, {
+  id: 'diy-embarrassed-eyes',
+  src: 'affinity-engine/images/diy-embarrassed-eyes.png'
 }];

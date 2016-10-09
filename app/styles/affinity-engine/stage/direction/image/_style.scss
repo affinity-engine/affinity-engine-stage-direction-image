@@ -3,28 +3,26 @@
 }
 
 .ae-stage-direction-image-type {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+
+  .ae-stage-direction-image-frame {
+    max-width: none;
+  }
+
   &.ae-figure {
     z-index: 10;
 
-    position: absolute;
-    height: 100%;
-    width: 100%;
 
     .ae-animation-box-wrapper {
       position: absolute;
       bottom: 0;
     }
-
-    .ae-stage-direction-image-frame {
-      max-width: none;
-    }
   }
 
   &.ae-cover {
-    height: 100%;
-    width: 100%;
     display: flex;
-    position: absolute;
 
     .ae-stage-direction-image-frame, .ember-animation-box-active-instance {
       height: 100%;
@@ -36,6 +34,22 @@
       object-position: 50% 50%;
 
       color: transparent;
+    }
+  }
+
+  // so that all layers will render on top of each other
+  .ae-stage-direction-image-layer {
+    position: absolute;
+  }
+
+  // if all layers are absolute, then the containing elements will have a width of 0.
+  // by making the base layer relative, it will still expand the parent elements,
+  // allowing us to use 'translateX'
+  .ae-stage-direction-image-layer-base {
+    position: relative;
+
+    .ae-animation-box-wrapper {
+      position: relative;
     }
   }
 }

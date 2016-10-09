@@ -20,9 +20,6 @@ export default Scene.extend({
     yield classroom.transition({ opacity: 0.3 }).transition({ opacity: 0.4 }).transition({ opacity: 0.5 });
 
     yield step();
-    classroom.caption('foo');
-
-    yield step();
     const classroom2 = yield script.image('classroom').transition({ opacity: 0.8 });
 
     yield step();
@@ -33,15 +30,24 @@ export default Scene.extend({
 
     yield step();
     yield script.image({
-      keyframes: [{
-        id: {
-          caption: 'beach during the night',
-          src: 'affinity-engine/images/beach-night.jpg'
+      layerOrder: ['base'],
+      compositions: {
+        default: {
+          base: 'beach-night'
         }
-      }]
+      }
     });
 
     yield step();
-    beach.keyframe({ time: 'night' });
+    beach.compose('night');
+
+    yield step();
+    const diy = script.image('diy').fadeIn();
+
+    yield step();
+    diy.compose('embarrassed');
+
+    yield step();
+    diy.compose('default');
   })
 });

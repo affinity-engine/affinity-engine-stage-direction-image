@@ -12,6 +12,8 @@ const {
   typeOf
 } = Ember;
 
+const { run: { later } } = Ember;
+
 export default Direction.extend({
   componentPath: 'affinity-engine-stage-direction-image',
   keyframeParentCategory: 'images',
@@ -53,8 +55,8 @@ export default Direction.extend({
         caption: configurable(configurationTiers, 'caption'),
         customClassNames: classNamesConfigurable(configurationTiers, 'classNames'),
         height: configurable(configurationTiers, 'height'),
-        keyframe: configurable(configurationTiers, 'keyframe'),
         keyframeParent: configurable(configurationTiers, 'keyframeParent'),
+        layers: configurable(configurationTiers, 'layers'),
         src: configurable(configurationTiers, 'src'),
         transitions: configurable(configurationTiers, 'transitions')
       };
@@ -66,8 +68,20 @@ export default Direction.extend({
 
     this._linkFixture(image);
     set(this, 'attrs.keyframeParent', image);
-    set(this, 'attrs.keyframe', this._findKeyframe(image));
+    set(this, 'attrs.layers', this._findDefaultLayers(image));
   }),
+
+  _findDefaultLayers(image) {
+    const layers = get(image, 'compositions.default');
+
+    return Ember.A(get(image, 'layerOrder').map((layer) => {
+      return {
+        layer,
+        keyframe: this._findFixture('keyframes', get(layers, layer)),
+        transitions: Ember.A([{ effect: { opacity: 1 }, duration: 0 }])
+      };
+    }));
+  },
 
   caption: cmd(function(caption) {
     set(this, 'attrs.caption', caption);
@@ -101,21 +115,35 @@ export default Direction.extend({
     transitions.pushObject(assign({ duration, effect }, options));
   }),
 
-  keyframe: cmd({ async: true }, function(fixtureOrKeys, transition = {}) {
-    const transitions = get(this, 'attrs.transitions');
-    const keyframeParent = get(this, 'attrs.keyframeParent');
-    const keyframe = this._findKeyframe(keyframeParent, fixtureOrKeys);
-    const crossFadeTransition = this._generateCrossFade(transition);
+  compose: cmd({ async: true }, function(fixtureOrKey, durationOrTransition) {
+    const duration = typeOf(durationOrTransition) === 'number' ? durationOrTransition : 750;
+    const transition = typeOf(durationOrTransition) === 'object' ? durationOrTransition : {};
+    const crossFadeTransition = this._generateCrossfade(transition, duration);
+    const layers = get(this, 'attrs.layers');
+    const composition = typeOf(fixtureOrKey) === 'object' ?
+      fixtureOrKey :
+      get(this, `attrs.keyframeParent.compositions.${fixtureOrKey}`);
 
-    crossFadeTransition.crossFade.cb = () => {
-      set(this, 'attrs.keyframe', keyframe);
-      set(this, 'directable.attrs.keyframe', keyframe);
-    };
+    const layerChanges = Object.keys(composition).map((key) => {
+      const layer = layers.findBy('layer', key);
+      const newKeyframe = this._findFixture('keyframes', get(composition, key));
+      const oldKeyframe = get(layer, 'keyframe');
 
-    transitions.pushObject(crossFadeTransition);
+      return (resolve) => {
+        if (newKeyframe !== oldKeyframe) {
+          const layerTransition = this._crossFadeLayer(layer, newKeyframe, crossFadeTransition);
+
+          get(layer, 'transitions').pushObject(layerTransition);
+        }
+
+        later(() => { resolve(); }, duration);
+      }
+    });
+
+    get(this, 'attrs.transitions').pushObject({ external: { layerChanges } });
   }),
 
-  _generateCrossFade(transition) {
+  _generateCrossfade(transition, duration) {
     if (isBlank(transition.crossFade)) {
       transition.crossFade = {};
     }
@@ -123,7 +151,10 @@ export default Direction.extend({
       transition.crossFade.in = { };
     }
     if (isBlank(transition.crossFade.in.effect)) {
-      transition.crossFade.in.effect = { opacity: 1 };
+      transition.crossFade.in.effect = { opacity: [1, 0] };
+    }
+    if (isBlank(transition.crossFade.in.duration)) {
+      transition.crossFade.in.duration = duration / 1.25;
     }
     if (isBlank(transition.crossFade.out)) {
       transition.crossFade.out = { };
@@ -131,26 +162,33 @@ export default Direction.extend({
     if (isBlank(transition.crossFade.out.effect)) {
       transition.crossFade.out.effect = { opacity: 0 };
     }
+    if (isBlank(transition.crossFade.out.duration)) {
+      transition.crossFade.out.duration = duration;
+    }
 
     return transition;
   },
 
-  _findFixture(type, fixtureOrId) {
-    return typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find(type, fixtureOrId);
+  _crossFadeLayer(layer, keyframe, genericTransition) {
+    const layerTransition = {
+      crossFade: assign({}, genericTransition.crossFade)
+    };
+
+    if (isBlank(keyframe)) {
+      layerTransition.crossFade.out = {
+        ...layerTransition.crossFade.out,
+        static: true
+      };
+    }
+
+    layerTransition.crossFade.cb = () => {
+      set(layer, 'keyframe', keyframe);
+    }
+
+    return layerTransition;
   },
 
-  _findKeyframe(parent, newKeys = {}) {
-    const query = assign(get(this, 'keyframeKeys'), newKeys);
-    const queryKeys = Object.keys(query);
-    const keyframe = Ember.A(get(parent, 'keyframes')).find((keyframe) => {
-      return Object.keys(keyframe).filter((key) => key !== 'id').concat(queryKeys).every((key) => {
-        if (query[key] === undefined) { query[key] = 'default'; }
-        if (keyframe[key] === undefined) { keyframe[key] = 'default'; }
-
-        return query[key] === keyframe[key];
-      });
-    });
-
-    return this._findFixture('keyframes', get(keyframe, 'id'));
+  _findFixture(type, fixtureOrId) {
+    return typeOf(fixtureOrId) === 'object' ? fixtureOrId : get(this, 'fixtureStore').find(type, fixtureOrId);
   }
 });

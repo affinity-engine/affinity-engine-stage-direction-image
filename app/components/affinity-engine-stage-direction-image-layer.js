@@ -1,0 +1,1 @@
+export { default } from 'affinity-engine-stage-direction-image/components/affinity-engine-stage-direction-image-layer';

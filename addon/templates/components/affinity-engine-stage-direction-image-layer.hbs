@@ -1,0 +1,16 @@
+{{#affinity-engine-animation-box-wrapper
+  animationAdapter=animationLibrary
+  classNames="ae-hidden ae-animation-box-wrapper"
+  transitions=transitions
+}}
+  {{#if keyframe}}
+    {{affinity-engine-stage-direction-image-keyframe
+      height=height
+      keyframeId=keyframe.id
+      layer=layer
+      src=src
+      engineId=engineId
+      windowId=windowId
+    }}
+  {{/if}}
+{{/affinity-engine-animation-box-wrapper}}
