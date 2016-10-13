@@ -1,25 +1,30 @@
 export default [{
   id: 'classroom',
+  defaultIdentifiers: 'classroom',
   layerOrder: ['base'],
-  compositions: {
-    default: {
-      base: 'classroom'
-    }
+  layers: {
+    base: [{
+      id: 'classroom',
+      keyframe: 'classroom'
+    }]
   }
 }, {
   id: 'beach',
+  defaultIdentifiers: 'day',
   layerOrder: ['base'],
-  compositions: {
-    default: {
-      base: 'beach-day'
-    },
-    night: {
-      base: 'beach-night'
-    }
+  layers: {
+    base: [{
+      id: 'day',
+      keyframe: 'beach-day'
+    }, {
+      id: 'night',
+      keyframe: 'beach-night'
+    }]
   }
 }, {
   id: 'diy',
   height: 90,
+  defaultIdentifiers: { pose: 'standing', expression: 'neutral' },
   layerOrder: [
     'base',
     'blush',
@@ -28,19 +33,36 @@ export default [{
     'eyes',
     'hair'
   ],
-  compositions: {
-    default: {
-      base: 'diy-base',
-      blush: null,
-      lips: 'diy-default-lips',
-      nose: 'diy-default-nose',
-      eyes: 'diy-default-eyes',
-      hair: 'diy-default-hair'
-    },
-    embarrassed: {
-      blush: 'diy-blush',
-      lips: 'diy-embarrassed-lips',
-      eyes: 'diy-embarrassed-eyes'
-    }
+  layers: {
+    base: [{
+      id: { pose: 'standing' },
+      keyframe: 'diy-base'
+    }],
+    blush: [{
+      id: { pose: 'standing', expression: 'embarrassed' },
+      keyframe: 'diy-blush'
+    }],
+    lips: [{
+      id: { pose: 'standing', expression: 'neutral' },
+      keyframe: 'diy-default-lips'
+    }, {
+      id: { pose: 'standing', expression: 'embarrassed' },
+      keyframe: 'diy-embarrassed-lips'
+    }],
+    nose: [{
+      id: { pose: 'standing' },
+      keyframe: 'diy-default-nose'
+    }],
+    eyes: [{
+      id: { pose: 'standing', expression: 'neutral' },
+      keyframe: 'diy-default-eyes'
+    }, {
+      id: { pose: 'standing', expression: 'embarrassed' },
+      keyframe: 'diy-embarrassed-eyes'
+    }],
+    hair: [{
+      id: { pose: 'standing' },
+      keyframe: 'diy-default-hair'
+    }]
   }
 }];

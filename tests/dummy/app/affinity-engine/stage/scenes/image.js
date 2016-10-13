@@ -29,25 +29,15 @@ export default Scene.extend({
     const beach = yield script.image('beach');
 
     yield step();
-    yield script.image({
-      layerOrder: ['base'],
-      compositions: {
-        default: {
-          base: 'beach-night'
-        }
-      }
-    });
-
-    yield step();
     beach.compose('night');
 
     yield step();
     const diy = script.image('diy').fadeIn();
 
     yield step();
-    diy.compose('embarrassed');
+    diy.compose({ expression: 'embarrassed' });
 
     yield step();
-    diy.compose('default');
+    diy.compose({ expression: 'neutral' });
   })
 });

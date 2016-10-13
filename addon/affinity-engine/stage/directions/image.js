@@ -72,15 +72,31 @@ export default Direction.extend({
   }),
 
   _findDefaultLayers(image) {
-    const layers = get(image, 'compositions.default');
+    const defaultIdentifiers = get(image, 'defaultIdentifiers');
+    const layers = get(image, 'layers');
 
-    return Ember.A(get(image, 'layerOrder').map((layer) => {
+    set(this, '_identifiers', defaultIdentifiers);
+
+    return Ember.A(get(image, 'layerOrder').map((layerName) => {
+      const keyframeId = this._findKeyframeId(layers, layerName, defaultIdentifiers);
       return {
-        layer,
-        keyframe: this._findFixture('keyframes', get(layers, layer)),
+        layer: layerName,
+        keyframe: this._findFixture('keyframes', keyframeId),
         transitions: Ember.A([{ effect: { opacity: 1 }, duration: 0 }])
       };
     }));
+  },
+
+  _findKeyframeId(layers, layerName, id) {
+    const layer = get(layers, layerName).find((layer) => {
+      const layerId = get(layer, 'id');
+
+      return typeOf(layerId) === 'string' || typeOf(id) === 'string' ?
+        layerId === id :
+        Object.keys(layerId).every((key) => layerId[key] === id[key]);
+    }) || {};
+
+    return get(layer, 'keyframe');
   },
 
   caption: cmd(function(caption) {
@@ -115,19 +131,16 @@ export default Direction.extend({
     transitions.pushObject(assign({ duration, effect }, options));
   }),
 
-  compose: cmd({ async: true }, function(fixtureOrKey, durationOrTransition) {
+  compose: cmd({ async: true }, function(key, durationOrTransition) {
     const duration = typeOf(durationOrTransition) === 'number' ? durationOrTransition : 750;
     const transition = typeOf(durationOrTransition) === 'object' ? durationOrTransition : {};
     const crossFadeTransition = this._generateCrossfade(transition, duration);
     const layers = get(this, 'attrs.layers');
-    const composition = typeOf(fixtureOrKey) === 'object' ?
-      fixtureOrKey :
-      get(this, `attrs.keyframeParent.compositions.${fixtureOrKey}`);
+    const identifiers = typeOf(key) === 'object' ? assign(get(this, '_identifiers'), key) : set(this, '_identifiers', key);
 
-    const layerChanges = Object.keys(composition).map((key) => {
-      const layer = layers.findBy('layer', key);
-      const newKeyframe = this._findFixture('keyframes', get(composition, key));
+    const layerChanges = layers.map((layer) => {
       const oldKeyframe = get(layer, 'keyframe');
+      const newKeyframe = this._findFixture('keyframes', this._findKeyframeId(get(this, 'attrs.keyframeParent.layers'), get(layer, 'layer'), identifiers));
 
       return (resolve) => {
         if (newKeyframe !== oldKeyframe) {

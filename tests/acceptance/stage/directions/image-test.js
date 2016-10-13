@@ -14,7 +14,7 @@ moduleForAcceptance('Acceptance | affinity-engine/stage/directions/image', {
 });
 
 test('Affinity Engine | stage | Directions | Image', function(assert) {
-  assert.expect(25);
+  assert.expect(23);
 
   visit('/image').then(() => {
     assert.ok($hook('affinity_engine_stage_direction_image').length > 0, 'image is rendered by transition');
@@ -53,30 +53,25 @@ test('Affinity Engine | stage | Directions | Image', function(assert) {
 
     return step(100);
   }).then(() => {
-    assert.equal($hook('affinity_engine_stage_direction_image').length, 4, '`Image` can be passed a fixture directly');
-    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img`).attr('src').match('engine/images/beach-night.jpg'), 'the manually defined image src is set properly');
-
-    return step(100);
-  }).then(() => {
-    assert.equal($hook('affinity_engine_stage_direction_image').length, 4, '`compose` does not create a new image');
+    assert.equal($hook('affinity_engine_stage_direction_image').length, 3, '`compose` does not create a new image');
     assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(2) img`).attr('src').match('engine/images/beach-night.jpg'), 'it changes the src of the image');
 
     return step(100);
   }).then(() => {
-    assert.equal($hook('affinity_engine_stage_direction_image').length, 5, 'composed images can render');
-    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(4) img`).length, 4, 'composed images consist of multiple frames');
-    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(4) img:first`).attr('src').match('affinity-engine/images/diy-base.png'), 'it renders images in ascending order');
-    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(4) img:nth(1)`).attr('src').match('affinity-engine/images/diy-default-lips.png'), 'it renders the default lips');
-    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(4) img:last`).attr('src').match('affinity-engine/images/diy-default-hair.png'), 'last composed image correct');
+    assert.equal($hook('affinity_engine_stage_direction_image').length, 4, 'composed images can render');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img`).length, 4, 'composed images consist of multiple frames');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img:first`).attr('src').match('affinity-engine/images/diy-base.png'), 'it renders images in ascending order');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img:nth(1)`).attr('src').match('affinity-engine/images/diy-default-lips.png'), 'it renders the default lips');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img:last`).attr('src').match('affinity-engine/images/diy-default-hair.png'), 'last composed image correct');
 
     return step(100);
   }).then(() => {
-    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(4) img`).length, 5, '`compose` can add a new layer');
-    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(4) img:nth(2)`).attr('src').match('affinity-engine/images/diy-embarrassed-lips.png'), 'it renders the embarrassed lips');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img`).length, 5, '`compose` can add a new layer');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img:nth(2)`).attr('src').match('affinity-engine/images/diy-embarrassed-lips.png'), 'it renders the embarrassed lips');
 
     return step(100);
   }).then(() => {
-    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(4) img`).length, 4, '`compose` can remove a layer');
-    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(4) img:nth(1)`).attr('src').match('affinity-engine/images/diy-default-lips.png'), 'it returns to the default lips');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img`).length, 4, '`compose` can remove a layer');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img:nth(1)`).attr('src').match('affinity-engine/images/diy-default-lips.png'), 'it returns to the default lips');
   });
 });
