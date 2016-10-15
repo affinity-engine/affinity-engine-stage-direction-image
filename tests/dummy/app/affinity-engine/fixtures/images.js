@@ -50,7 +50,7 @@ export default [{
       keyframe: 'diy-embarrassed-lips'
     }],
     nose: [{
-      id: { pose: 'standing' },
+      id: [{ pose: 'standing', expression: 'neutral' }, { pose: 'standing', expression: 'embarrassed' }],
       keyframe: 'diy-default-nose'
     }],
     eyes: [{

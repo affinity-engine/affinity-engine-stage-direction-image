@@ -71,34 +71,6 @@ export default Direction.extend({
     set(this, 'attrs.layers', this._findDefaultLayers(image));
   }),
 
-  _findDefaultLayers(image) {
-    const defaultIdentifiers = get(image, 'defaultIdentifiers');
-    const layers = get(image, 'layers');
-
-    set(this, '_identifiers', defaultIdentifiers);
-
-    return Ember.A(get(image, 'layerOrder').map((layerName) => {
-      const keyframeId = this._findKeyframeId(layers, layerName, defaultIdentifiers);
-      return {
-        layer: layerName,
-        keyframe: this._findFixture('keyframes', keyframeId),
-        transitions: Ember.A([{ effect: { opacity: 1 }, duration: 0 }])
-      };
-    }));
-  },
-
-  _findKeyframeId(layers, layerName, id) {
-    const layer = get(layers, layerName).find((layer) => {
-      const layerId = get(layer, 'id');
-
-      return typeOf(layerId) === 'string' || typeOf(id) === 'string' ?
-        layerId === id :
-        Object.keys(layerId).every((key) => layerId[key] === id[key]);
-    }) || {};
-
-    return get(layer, 'keyframe');
-  },
-
   caption: cmd(function(caption) {
     set(this, 'attrs.caption', caption);
   }),
@@ -199,6 +171,39 @@ export default Direction.extend({
     }
 
     return layerTransition;
+  },
+
+  _findDefaultLayers(image) {
+    const defaultIdentifiers = get(image, 'defaultIdentifiers');
+    const layers = get(image, 'layers');
+
+    set(this, '_identifiers', defaultIdentifiers);
+
+    return Ember.A(get(image, 'layerOrder').map((layerName) => {
+      const keyframeId = this._findKeyframeId(layers, layerName, defaultIdentifiers);
+      return {
+        layer: layerName,
+        keyframe: this._findFixture('keyframes', keyframeId),
+        transitions: Ember.A([{ effect: { opacity: 1 }, duration: 0 }])
+      };
+    }));
+  },
+
+  _findKeyframeId(layers, layerName, id) {
+    const layer = get(layers, layerName).find((layer) => {
+      const layerId = get(layer, 'id');
+
+      return typeOf(layerId) === 'string' || typeOf(id) === 'string' ?
+        layerId === id : this._findKeyframeIdFromArrayOrObject(layerId, id);
+    }) || {};
+
+    return get(layer, 'keyframe');
+  },
+
+  _findKeyframeIdFromArrayOrObject(layerIdOrArray, id) {
+    return typeOf(layerIdOrArray) === 'array' ?
+      layerIdOrArray.some((layerId) => this._findKeyframeIdFromArrayOrObject(layerId, id)) :
+      Object.keys(layerIdOrArray).every((key) => layerIdOrArray[key] === id[key]);
   },
 
   _findFixture(type, fixtureOrId) {

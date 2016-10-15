@@ -14,7 +14,7 @@ moduleForAcceptance('Acceptance | affinity-engine/stage/directions/image', {
 });
 
 test('Affinity Engine | stage | Directions | Image', function(assert) {
-  assert.expect(23);
+  assert.expect(25);
 
   visit('/image').then(() => {
     assert.ok($hook('affinity_engine_stage_direction_image').length > 0, 'image is rendered by transition');
@@ -62,12 +62,14 @@ test('Affinity Engine | stage | Directions | Image', function(assert) {
     assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img`).length, 4, 'composed images consist of multiple frames');
     assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img:first`).attr('src').match('affinity-engine/images/diy-base.png'), 'it renders images in ascending order');
     assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img:nth(1)`).attr('src').match('affinity-engine/images/diy-default-lips.png'), 'it renders the default lips');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img:nth(2)`).attr('src').match('affinity-engine/images/diy-default-nose.png'), 'it renders nose from array');
     assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img:last`).attr('src').match('affinity-engine/images/diy-default-hair.png'), 'last composed image correct');
 
     return step(100);
   }).then(() => {
     assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img`).length, 5, '`compose` can add a new layer');
     assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img:nth(2)`).attr('src').match('affinity-engine/images/diy-embarrassed-lips.png'), 'it renders the embarrassed lips');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img:nth(3)`).attr('src').match('affinity-engine/images/diy-default-nose.png'), 'it still renders nose from array');
 
     return step(100);
   }).then(() => {
