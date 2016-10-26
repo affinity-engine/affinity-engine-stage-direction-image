@@ -14,8 +14,11 @@
   &.ae-figure {
     z-index: 10;
 
+    .ae-animation-box-wrapper, .ember-animation-box-active-instance, .ae-stage-direction-image-layer {
+      height: 100%;
+    }
 
-    .ae-animation-box-wrapper {
+    .ae-stage-direction-image-layer, .ae-stage-direction-image-frame {
       position: absolute;
       bottom: 0;
     }

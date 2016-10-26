@@ -8,25 +8,21 @@ const {
   isPresent
 } = Ember;
 
+const { String: { htmlSafe } } = Ember;
+
 export default Component.extend({
   tagName: 'img',
-  attributeBindings: ['alt', 'src'],
+  attributeBindings: ['alt', 'src', 'style'],
   classNames: ['ae-stage-direction-image-frame'],
   hook: 'affinity_engine_stage_direction_image_frame',
 
   translator: registrant('affinity-engine/translator'),
 
-  didRender(...args) {
-    this._super(...args);
-
-    this.$().css('height', get(this, 'heightRatio'));
-  },
-
-  heightRatio: computed('height', {
+  style: computed('height', {
     get() {
       const height = get(this, 'height');
 
-      if (isPresent(height)) { return this.$().closest('.ae-stage-direction-image-type').height() * (height / 100); }
+      return htmlSafe(isPresent(height) ? `height: ${get(this, 'height')}%` : '');
     }
   }),
 
