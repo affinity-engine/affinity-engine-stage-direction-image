@@ -14,7 +14,7 @@ moduleForAcceptance('Acceptance | affinity-engine/stage/directions/image', {
 });
 
 test('Affinity Engine | stage | Directions | Image', function(assert) {
-  assert.expect(25);
+  assert.expect(26);
 
   visit('/image').then(() => {
     assert.ok($hook('affinity_engine_stage_direction_image').length > 0, 'image is rendered by transition');
@@ -64,6 +64,10 @@ test('Affinity Engine | stage | Directions | Image', function(assert) {
     assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img:nth(1)`).attr('src').match('affinity-engine/images/diy-default-lips.png'), 'it renders the default lips');
     assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img:nth(2)`).attr('src').match('affinity-engine/images/diy-default-nose.png'), 'it renders nose from array');
     assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img:last`).attr('src').match('affinity-engine/images/diy-default-hair.png'), 'last composed image correct');
+
+    return step(100);
+  }).then(() => {
+    assert.equal(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3)`).children(hook('ember_animation_box')).css('margin'), '10px', '`position` positions the character');
 
     return step(100);
   }).then(() => {

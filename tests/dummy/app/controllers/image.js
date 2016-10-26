@@ -14,6 +14,11 @@ export default Controller.extend({
           image: {
             transition: {
               duration: 1000
+            },
+            positions: {
+              dummy1: {
+                margin: '10px'
+              }
             }
           }
         }

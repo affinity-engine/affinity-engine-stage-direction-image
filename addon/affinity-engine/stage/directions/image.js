@@ -103,6 +103,19 @@ export default Direction.extend({
     transitions.pushObject(assign({ duration, effect }, options));
   }),
 
+  position: cmd(function(positions, duration = 0, options = {}) {
+    const effect = positions.split(' ').reduce((aggregator, position) => {
+      const nextEffectTier = Ember.A(get(this, '_configurationTiers')).find((tier) => {
+        return get(this, `${tier}.positions.${position}`);
+      });
+      const nextEffect = get(this, `${nextEffectTier}.positions.${position}`);
+
+      return assign(aggregator, nextEffect);
+    }, {});
+
+    this.transition(effect, duration, options);
+  }),
+
   compose: cmd({ async: true }, function(key, durationOrTransition) {
     const duration = typeOf(durationOrTransition) === 'number' ? durationOrTransition : 750;
     const transition = typeOf(durationOrTransition) === 'object' ? durationOrTransition : {};

@@ -35,6 +35,9 @@ export default Scene.extend({
     const diy = script.image('diy').fadeIn();
 
     yield step();
+    diy.position('dummy1');
+
+    yield step();
     diy.compose({ expression: 'embarrassed' });
 
     yield step();

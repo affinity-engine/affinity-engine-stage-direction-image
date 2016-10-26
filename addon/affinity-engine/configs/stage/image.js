@@ -11,7 +11,8 @@ export default {
           },
           positions: {
             center: {
-              left: '50%'
+              left: '50%',
+              translateX: '-50%'
             },
             centerLeft: {
               left: '50%',
