@@ -22,22 +22,26 @@ export default {
               left: '50%'
             },
             left: {
-              left: '20%'
+              left: '25%',
+              translateX: '-50%'
             },
             right: {
-              left: '80%'
+              left: '75%',
+              translateX: '-50%'
             },
             farLeft: {
-              left: '5%'
+              left: '0%'
             },
             farRight: {
-              left: '95%'
+              left: '100%',
+              translateX: '-100%'
             },
             offLeft: {
-              left: '-30%'
+              left: '0%',
+              translateX: '-100%'
             },
             offRight: {
-              left: '130%'
+              left: '100%'
             },
             nudgeLeft: {
               left: '-=5%'
