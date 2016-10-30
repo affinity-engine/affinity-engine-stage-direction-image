@@ -126,7 +126,10 @@ export default Direction.extend({
 
     const layerChanges = layers.map((layer) => {
       const oldKeyframeIds = get(layer, 'keyframes').map((keyframe) => get(keyframe, 'id'));
-      const newKeyframeIds = this._findKeyframeIds(get(this, 'attrs.keyframeParent.layers'), get(layer, 'layer'), identifiers);
+      const parentLayers = get(this, 'attrs.keyframeParent.layers');
+      const newKeyframeIds = isPresent(parentLayers) ?
+        this._findKeyframeIds(get(this, 'attrs.keyframeParent.layers'), get(layer, 'layer'), identifiers) :
+        [get(this, 'attrs.keyframeParent.keyframes').find((keyframe) => get(keyframe, 'id') === key).keyframe];
 
       return (resolve) => {
         if (newKeyframeIds.length !== oldKeyframeIds.length || !newKeyframeIds.every((id, index) => id === oldKeyframeIds[index])) {
@@ -191,6 +194,16 @@ export default Direction.extend({
   _findDefaultLayers(image) {
     const defaultIdentifiers = get(image, 'defaultIdentifiers');
     const layers = get(image, 'layers');
+
+    if (isBlank(layers)) {
+      const keyframe = get(image, 'keyframe') || get(image, 'keyframes');
+      const keyframeId = typeOf(keyframe) === 'array' ? keyframe.find((frame) => get(frame, 'default')) : keyframe;
+      return [{
+        layer: 'base',
+        transitions: Ember.A([{ effect: { opacity: 1 }, duration: 0 }]),
+        keyframes: [this._findFixture('keyframes', keyframeId)]
+      }]
+    }
 
     set(this, '_identifiers', defaultIdentifiers);
 
