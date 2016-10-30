@@ -16,7 +16,23 @@ export default Component.extend({
   classNames: ['ae-stage-direction-image-frame'],
   hook: 'affinity_engine_stage_direction_image_frame',
 
+  preloader: registrant('affinity-engine/preloader'),
   translator: registrant('affinity-engine/translator'),
+
+  src: computed('keyframe.src', {
+    get() {
+      const preloader = get(this, 'preloader');
+
+      if (get(preloader, 'isPlaceholder')) { return get(this, 'keyframe.src'); }
+
+      const keyframe = get(this, 'keyframe');
+      const imageId = preloader.idFor(keyframe, 'src');
+      const blob = preloader.getElement(imageId, true);
+      const urlCreator = window.URL || window.webkitURL;
+
+      return blob ? urlCreator.createObjectURL(blob) : get(keyframe, 'src');
+    }
+  }),
 
   style: computed('height', {
     get() {
@@ -26,10 +42,10 @@ export default Component.extend({
     }
   }),
 
-  alt: computed('keyframeId', 'caption', {
+  alt: computed('keyframe.id', 'caption', {
     get() {
       const caption = get(this, 'caption.key') || get(this, 'caption');
-      const key = caption || `keyframes.${get(this, 'keyframeId')}`;
+      const key = caption || `keyframes.${get(this, 'keyframe.id')}`;
 
       return get(this, 'translator').translate(key, get(this, 'caption.options')) || caption;
     }

@@ -8,6 +8,7 @@ const {
   computed,
   get,
   isBlank,
+  isPresent,
   set,
   typeOf
 } = Ember;
@@ -124,12 +125,13 @@ export default Direction.extend({
     const identifiers = typeOf(key) === 'object' ? assign(get(this, '_identifiers'), key) : set(this, '_identifiers', key);
 
     const layerChanges = layers.map((layer) => {
-      const oldKeyframe = get(layer, 'keyframe');
-      const newKeyframe = this._findFixture('keyframes', this._findKeyframeId(get(this, 'attrs.keyframeParent.layers'), get(layer, 'layer'), identifiers));
+      const oldKeyframeIds = get(layer, 'keyframes').map((keyframe) => get(keyframe, 'id'));
+      const newKeyframeIds = this._findKeyframeIds(get(this, 'attrs.keyframeParent.layers'), get(layer, 'layer'), identifiers);
 
       return (resolve) => {
-        if (newKeyframe !== oldKeyframe) {
-          const layerTransition = this._crossFadeLayer(layer, newKeyframe, crossFadeTransition);
+        if (newKeyframeIds.length !== oldKeyframeIds.length || !newKeyframeIds.every((id, index) => id === oldKeyframeIds[index])) {
+          const newKeyframes = newKeyframeIds.map((id) => this._findFixture('keyframes', id));
+          const layerTransition = this._crossFadeLayer(layer, newKeyframes, crossFadeTransition);
 
           get(layer, 'transitions').pushObject(layerTransition);
         }
@@ -167,12 +169,12 @@ export default Direction.extend({
     return transition;
   },
 
-  _crossFadeLayer(layer, keyframe, genericTransition) {
+  _crossFadeLayer(layer, keyframes, genericTransition) {
     const layerTransition = {
       crossFade: assign({}, genericTransition.crossFade)
     };
 
-    if (isBlank(keyframe)) {
+    if (isBlank(keyframes)) {
       layerTransition.crossFade.out = {
         ...layerTransition.crossFade.out,
         static: true
@@ -180,7 +182,7 @@ export default Direction.extend({
     }
 
     layerTransition.crossFade.cb = () => {
-      set(layer, 'keyframe', keyframe);
+      set(layer, 'keyframes', keyframes);
     }
 
     return layerTransition;
@@ -193,16 +195,18 @@ export default Direction.extend({
     set(this, '_identifiers', defaultIdentifiers);
 
     return Ember.A(get(image, 'layerOrder').map((layerName) => {
-      const keyframeId = this._findKeyframeId(layers, layerName, defaultIdentifiers);
+      const keyframeIds = this._findKeyframeIds(layers, layerName, defaultIdentifiers);
+      const keyframes = keyframeIds.map((keyframeId) => this._findFixture('keyframes', keyframeId));
+
       return {
         layer: layerName,
-        keyframe: this._findFixture('keyframes', keyframeId),
-        transitions: Ember.A([{ effect: { opacity: 1 }, duration: 0 }])
+        transitions: Ember.A([{ effect: { opacity: 1 }, duration: 0 }]),
+        keyframes
       };
     }));
   },
 
-  _findKeyframeId(layers, layerName, id) {
+  _findKeyframeIds(layers, layerName, id) {
     const layer = get(layers, layerName).find((layer) => {
       const layerId = get(layer, 'id');
 
@@ -210,7 +214,9 @@ export default Direction.extend({
         layerId === id : this._findKeyframeIdFromArrayOrObject(layerId, id);
     }) || {};
 
-    return get(layer, 'keyframe');
+    const keyframes = get(layer, 'keyframes') || get(layer, 'keyframe');
+
+    return (typeOf(keyframes) === 'array' ? keyframes : [keyframes]).filter((id) => isPresent(id));
   },
 
   _findKeyframeIdFromArrayOrObject(layerIdOrArray, id) {

@@ -28,9 +28,8 @@ export default [{
   layerOrder: [
     'base',
     'blush',
-    'lips',
+    'lipsAndEyes',
     'nose',
-    'eyes',
     'hair'
   ],
   layers: {
@@ -40,29 +39,22 @@ export default [{
     }],
     blush: [{
       id: { pose: 'standing', expression: 'embarrassed' },
-      keyframe: 'diy-blush'
+      keyframes: 'diy-blush'
     }],
-    lips: [{
+    lipsAndEyes: [{
       id: { pose: 'standing', expression: 'neutral' },
-      keyframe: 'diy-default-lips'
+      keyframes: ['diy-default-lips', 'diy-default-eyes']
     }, {
       id: { pose: 'standing', expression: 'embarrassed' },
-      keyframe: 'diy-embarrassed-lips'
+      keyframes: ['diy-embarrassed-lips', 'diy-embarrassed-eyes']
     }],
     nose: [{
       id: [{ pose: 'standing', expression: 'neutral' }, { pose: 'standing', expression: 'embarrassed' }],
-      keyframe: 'diy-default-nose'
-    }],
-    eyes: [{
-      id: { pose: 'standing', expression: 'neutral' },
-      keyframe: 'diy-default-eyes'
-    }, {
-      id: { pose: 'standing', expression: 'embarrassed' },
-      keyframe: 'diy-embarrassed-eyes'
+      keyframes: 'diy-default-nose'
     }],
     hair: [{
       id: { pose: 'standing' },
-      keyframe: 'diy-default-hair'
+      keyframes: 'diy-default-hair'
     }]
   }
 }];
