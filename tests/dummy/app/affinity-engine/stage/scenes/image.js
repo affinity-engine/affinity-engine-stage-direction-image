@@ -29,7 +29,7 @@ export default Scene.extend({
     const beach = yield script.image('beach');
 
     yield step();
-    beach.compose('night');
+    beach.keyframe('night');
 
     yield step();
     const diy = script.image('diy').fadeIn();
@@ -38,9 +38,9 @@ export default Scene.extend({
     diy.position('dummy1');
 
     yield step();
-    diy.compose({ expression: 'embarrassed' });
+    diy.state({ expression: 'embarrassed' });
 
     yield step();
-    diy.compose({ expression: 'neutral' });
+    diy.state({ expression: 'neutral' });
   })
 });
