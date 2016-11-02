@@ -14,7 +14,7 @@ moduleForAcceptance('Acceptance | affinity-engine/stage/directions/image', {
 });
 
 test('Affinity Engine | stage | Directions | Image', function(assert) {
-  assert.expect(26);
+  assert.expect(27);
 
   visit('/image').then(() => {
     assert.ok($hook('affinity_engine_stage_direction_image').length > 0, 'image is rendered by transition');
@@ -50,6 +50,7 @@ test('Affinity Engine | stage | Directions | Image', function(assert) {
     return step(100);
   }).then(() => {
     assert.equal($hook('affinity_engine_stage_direction_image').length, 3, 'images with different fixtures can co-exist on screen');
+    assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(2) img`).attr('src').match('engine/images/beach-day.jpg'), 'it uses the default keyframe');
 
     return step(100);
   }).then(() => {
