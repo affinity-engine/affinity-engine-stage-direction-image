@@ -38,7 +38,7 @@ export default Direction.extend({
     'attrs.fixtures.image',
     'config.attrs.component.stage.direction.image',
     'config.attrs.component.stage',
-    'config.attrs'
+    'config.attrs.global'
   ],
 
   _directableDefinition: computed('_baseImageDirectableDefinition', {
