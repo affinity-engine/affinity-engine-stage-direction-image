@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import { ResizeMixin, registrant } from 'affinity-engine';
+import { registrant } from 'affinity-engine';
 
 const {
   Component,
@@ -8,9 +8,11 @@ const {
   isPresent
 } = Ember;
 
-export default Component.extend(ResizeMixin, {
+const { String: { htmlSafe } } = Ember;
+
+export default Component.extend({
   tagName: 'img',
-  attributeBindings: ['alt', 'src'],
+  attributeBindings: ['alt', 'src', 'style'],
   classNames: ['ae-stage-direction-image-frame'],
   hook: 'affinity_engine_stage_direction_image_frame',
 
@@ -32,25 +34,11 @@ export default Component.extend(ResizeMixin, {
     }
   }),
 
-  didInsertElement(...args) {
-    this._super(...args);
-
-    this.didResize();
-  },
-
-  didResize() {
-    const height = get(this, 'relativeHeight');
-
-    if (isPresent(height)) { this.$().css('height', `${height}px`); }
-  },
-
-  relativeHeight: computed('height', {
+  style: computed('height', {
     get() {
       const height = get(this, 'height');
 
-      if (isPresent(height)) {
-        return (height / 100) * this.$().closest('.ae-stage-direction-image-type').height();
-      }
+      return htmlSafe(isPresent(height) ? `height: ${get(this, 'height')}%` : '');
     }
   }),
 
