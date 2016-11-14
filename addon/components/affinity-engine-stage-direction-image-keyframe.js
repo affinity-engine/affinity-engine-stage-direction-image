@@ -19,6 +19,14 @@ export default Component.extend({
   preloader: registrant('affinity-engine/preloader'),
   translator: registrant('affinity-engine/translator'),
 
+  style: computed('height', {
+    get() {
+      const height = get(this, 'height');
+
+      return htmlSafe(isPresent(height) ? `height: ${height}px;` : '');
+    }
+  }),
+
   src: computed('keyframe.src', {
     get() {
       const preloader = get(this, 'preloader');
@@ -31,14 +39,6 @@ export default Component.extend({
       const urlCreator = window.URL || window.webkitURL;
 
       return blob ? urlCreator.createObjectURL(blob) : get(keyframe, 'src');
-    }
-  }),
-
-  style: computed('height', {
-    get() {
-      const height = get(this, 'height');
-
-      return htmlSafe(isPresent(height) ? `height: ${get(this, 'height')}%` : '');
     }
   }),
 
