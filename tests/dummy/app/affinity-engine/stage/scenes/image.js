@@ -5,6 +5,10 @@ export default Scene.extend({
   name: 'Image Direction Test',
 
   start: task(function * (script) {
+  const diyz = yield script.image('diy').fadeIn();
+
+  // yield step();
+  diyz.state({ expression: 'embarrassed' });
     const classroom = script.image('classroom').classNames('foofoo');
 
     yield step();
