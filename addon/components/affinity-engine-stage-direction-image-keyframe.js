@@ -19,11 +19,21 @@ export default Component.extend({
   preloader: registrant('affinity-engine/preloader'),
   translator: registrant('affinity-engine/translator'),
 
+  didRender(...args) {
+    this._super(...args);
+
+    if (get(this, 'isBase')) {
+      this.$().on('load', () => {
+        this.$().closest('.ae-stage-direction-image-layer-base').width(this.$().width());
+      })
+    }
+  },
+
   style: computed('height', {
     get() {
       const height = get(this, 'height');
 
-      return htmlSafe(isPresent(height) ? `height: ${height}px;` : '');
+      return htmlSafe(isPresent(height) ? `height: ${height}%;` : '');
     }
   }),
 

@@ -7,6 +7,10 @@
   height: 100%;
   width: 100%;
 
+  .ae-stage-direction-image-layer, .ae-animation-box-wrapper, .ae-animation-box-wrapper div {
+    height: 100%;
+  }
+
   .ae-stage-direction-image-frame {
     position: absolute;
     top: 0;

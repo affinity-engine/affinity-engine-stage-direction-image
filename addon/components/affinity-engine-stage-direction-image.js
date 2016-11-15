@@ -3,13 +3,9 @@ import layout from '../templates/components/affinity-engine-stage-direction-imag
 import { DirectableComponentMixin } from 'affinity-engine-stage';
 
 const {
-  Component,
-  get,
-  isPresent,
-  set
+  Component
 } = Ember;
 
-const { run: { next } } = Ember;
 const { computed: { alias } } = Ember;
 
 export default Component.extend(DirectableComponentMixin, {
@@ -22,18 +18,9 @@ export default Component.extend(DirectableComponentMixin, {
   animationLibrary: alias('directable.animationLibrary'),
   caption: alias('directable.caption'),
   customClassNames: alias('directable.customClassNames'),
+  height: alias('directable.height'),
   layers: alias('directable.layers'),
   transitions: alias('directable.transitions'),
-
-  didRender() {
-    next(() => {
-      const height = get(this, 'directable.height');
-
-      if (isPresent(height)) {
-        set(this, 'height', this.$().height() * (height / 100));
-      }
-    });
-  },
 
   actions: {
     compose(transition, resolve) {
