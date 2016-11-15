@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import { registrant } from 'affinity-engine';
+import ResizeMixin from 'ember-resize-for-addons';
 
 const {
   Component,
@@ -10,7 +11,7 @@ const {
 
 const { String: { htmlSafe } } = Ember;
 
-export default Component.extend({
+export default Component.extend(ResizeMixin, {
   tagName: 'img',
   attributeBindings: ['alt', 'src', 'style'],
   classNames: ['ae-stage-direction-image-frame'],
@@ -22,10 +23,23 @@ export default Component.extend({
   didRender(...args) {
     this._super(...args);
 
+    this.$().on('load', () => {
+      this._fixParentWidth();
+    });
+  },
+
+  didResize(...args) {
+    this._super(...args);
+
+    this._fixParentWidth();
+  },
+
+  _fixParentWidth() {
     if (get(this, 'isBase')) {
-      this.$().on('load', () => {
-        this.$().closest('.ae-stage-direction-image-layer-base').width(this.$().width());
-      })
+      const $layer = this.$().closest('.ae-stage-direction-image-layer-base');
+
+      $layer.css('width', '');
+      $layer.width(this.$().width());
     }
   },
 
