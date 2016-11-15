@@ -9,6 +9,7 @@ const {
   isPresent
 } = Ember;
 
+const { run: { next } } = Ember;
 const { String: { htmlSafe } } = Ember;
 
 export default Component.extend(ResizeMixin, {
@@ -24,7 +25,7 @@ export default Component.extend(ResizeMixin, {
     this._super(...args);
 
     this.$().on('load', () => {
-      this._fixParentWidth();
+      next(() => this._fixParentWidth());
     });
   },
 
