@@ -5,11 +5,9 @@ const {
   Component,
   computed,
   get,
-  isBlank,
   isPresent
 } = Ember;
 
-const { run: { next } } = Ember;
 const { String: { htmlSafe } } = Ember;
 
 export default Component.extend({
