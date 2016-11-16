@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import layout from '../templates/components/affinity-engine-stage-direction-image-layer';
+import { ResizeMixin } from 'affinity-engine';
 
 const {
   Component,
@@ -11,9 +12,8 @@ const {
 
 const { equal } = computed;
 const { String: { htmlSafe } } = Ember;
-const { run: { later } } = Ember;
 
-export default Component.extend({
+export default Component.extend(ResizeMixin, {
   layout,
 
   attributeBindings: ['style'],
@@ -23,9 +23,19 @@ export default Component.extend({
 
   isBase: equal('layer', 'base'),
 
-  didInsertElement(...args) {
+  didRender(...args) {
     this._super(...args);
 
+    this._setWidth();
+  },
+
+  didResize(...args) {
+    this._super(...args);
+
+    this._setWidth();
+  },
+
+  _setWidth() {
     // For some reason, the parent element has a width of 0 even after the base image has
     // loaded. This forces the parent to have the same width as the image, and then removes
     // that width a little while later. For some reason, once the parent's width has been
@@ -33,10 +43,6 @@ export default Component.extend({
     if (get(this, 'isBase')) {
       this.$('img').on('load', () => {
         set(this, 'width', this.$('img').width());
-
-        later(() => {
-          set(this, 'width', undefined);
-        }, 500);
       });
     }
   },
