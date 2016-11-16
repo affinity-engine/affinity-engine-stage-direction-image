@@ -3,14 +3,13 @@
   classNames="ae-hidden ae-animation-box-wrapper"
   transitions=transitions
 }}
-  {{#each keyframes as |keyframe|}}
+  {{#if keyframe}}
     {{affinity-engine-stage-direction-image-keyframe
       height=height
-      isBase=isBase
       keyframe=keyframe
       layer=layer
       engineId=engineId
       stageId=stageId
     }}
-  {{/each}}
+  {{/if}}
 {{/affinity-engine-animation-box-wrapper}}

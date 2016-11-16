@@ -8,7 +8,6 @@ const {
   computed,
   get,
   isBlank,
-  isPresent,
   set,
   typeOf
 } = Ember;
@@ -117,28 +116,20 @@ export default Direction.extend({
     this.transition(effect, duration, options);
   }),
 
-  keyframe: cmd({ async: true }, function(...args) {
-    this.state(...args);
-  }),
-
-  state: cmd({ async: true }, function(key, durationOrTransition) {
+  keyframe: cmd({ async: true }, function(key, durationOrTransition) {
     const duration = typeOf(durationOrTransition) === 'number' ? durationOrTransition : 750;
     const transition = typeOf(durationOrTransition) === 'object' ? durationOrTransition : {};
     const crossFadeTransition = this._generateCrossfade(duration, transition);
-    const state = typeOf(key) === 'object' ? assign(get(this, '_state'), key) : set(this, '_state', key);
     const image = get(this, 'attrs.keyframeParent');
-    const layers = get(image, 'layers');
 
     const layerChanges = get(this, 'attrs.layers').map((layer) => {
-      const oldKeyframeIds = get(layer, 'keyframes').map((keyframe) => get(keyframe, 'id'));
-      const newKeyframeIds = isPresent(layers) ?
-        this._findKeyframeIdsByLayer(layers, get(layer, 'layer'), state) :
-        this._findKeyframeIdsByKey(get(image, 'keyframes'), key);
+      const oldKeyframeId = get(layer, 'keyframe.id');
+      const newKeyframeId = this._findKeyframeIdByKey(get(image, 'keyframes'), key);
 
       return (resolve) => {
-        if (this._compareArrays(newKeyframeIds, oldKeyframeIds)) {
-          const newKeyframes = newKeyframeIds.map((id) => this._findFixture('keyframes', id));
-          const layerTransition = this._crossFadeLayer(layer, newKeyframes, crossFadeTransition);
+        if (newKeyframeId !== oldKeyframeId) {
+          const newKeyframe = this._findFixture('keyframes', newKeyframeId);
+          const layerTransition = this._crossFadeLayer(layer, newKeyframe, crossFadeTransition);
 
           get(layer, 'transitions').pushObject(layerTransition);
         }
@@ -150,8 +141,35 @@ export default Direction.extend({
     get(this, 'attrs.transitions').pushObject({ external: { layerChanges } });
   }),
 
-  _findKeyframeIdsByKey(keyframes, key) {
-    return [keyframes.find((keyframe) => get(keyframe, 'id') === key).keyframe];
+  state: cmd({ async: true }, function(key, durationOrTransition) {
+    const duration = typeOf(durationOrTransition) === 'number' ? durationOrTransition : 750;
+    const transition = typeOf(durationOrTransition) === 'object' ? durationOrTransition : {};
+    const crossFadeTransition = this._generateCrossfade(duration, transition);
+    const state = assign(get(this, '_state'), key);
+    const image = get(this, 'attrs.keyframeParent');
+    const layers = get(image, 'layers');
+
+    const layerChanges = get(this, 'attrs.layers').map((layer) => {
+      const oldKeyframeId = get(layer, 'keyframe.id');
+      const newKeyframeId = this._findKeyframeIdByLayer(layers, get(layer, 'layer'), state);
+
+      return (resolve) => {
+        if (newKeyframeId !== oldKeyframeId) {
+          const newKeyframe = this._findFixture('keyframes', newKeyframeId);
+          const layerTransition = this._crossFadeLayer(layer, newKeyframe, crossFadeTransition);
+
+          get(layer, 'transitions').pushObject(layerTransition);
+        }
+
+        later(() => { resolve(); }, duration);
+      }
+    });
+
+    get(this, 'attrs.transitions').pushObject({ external: { layerChanges } });
+  }),
+
+  _findKeyframeIdByKey(keyframes, key) {
+    return keyframes.find((keyframe) => get(keyframe, 'id') === key).keyframe;
   },
 
   _compareArrays(a, b) {
@@ -190,12 +208,12 @@ export default Direction.extend({
     return transition;
   },
 
-  _crossFadeLayer(layer, keyframes, genericTransition) {
+  _crossFadeLayer(layer, keyframe, genericTransition) {
     const layerTransition = {
       crossFade: assign({}, genericTransition.crossFade)
     };
 
-    if (isBlank(keyframes)) {
+    if (isBlank(keyframe)) {
       layerTransition.crossFade.out = {
         ...layerTransition.crossFade.out,
         static: true
@@ -203,7 +221,7 @@ export default Direction.extend({
     }
 
     layerTransition.crossFade.cb = () => {
-      set(layer, 'keyframes', keyframes);
+      set(layer, 'keyframe', keyframe);
     }
 
     return layerTransition;
@@ -216,12 +234,12 @@ export default Direction.extend({
   },
 
   _findDefaultLayersByKeyframe(image) {
-    const keyframe = get(image, 'keyframe') || get(image, 'keyframes');
-    const keyframeId = typeOf(keyframe) === 'array' ?
-      keyframe.find((frame) => get(frame, 'default')).keyframe :
-      keyframe;
+    const keyframes = get(image, 'keyframe') || get(image, 'keyframes');
+    const keyframeId = typeOf(keyframes) === 'array' ?
+      keyframes.find((frame) => get(frame, 'default')).keyframe :
+      keyframes;
 
-    return [this._generateDefaultLayerTransition('base', [this._findFixture('keyframes', keyframeId)])];
+    return [this._generateDefaultLayerTransition('base', this._findFixture('keyframes', keyframeId))];
   },
 
   _findDefaultLayersByState(image) {
@@ -231,22 +249,22 @@ export default Direction.extend({
     set(this, '_state', defaultState);
 
     return get(image, 'layerOrder').map((layerName) => {
-      const keyframeIds = this._findKeyframeIdsByLayer(layers, layerName, defaultState);
-      const keyframes = keyframeIds.map((keyframeId) => this._findFixture('keyframes', keyframeId));
+      const keyframeId = this._findKeyframeIdByLayer(layers, layerName, defaultState);
+      const keyframe = this._findFixture('keyframes', keyframeId);
 
-      return this._generateDefaultLayerTransition(layerName, keyframes);
+      return this._generateDefaultLayerTransition(layerName, keyframe);
     });
   },
 
-  _generateDefaultLayerTransition(layer, keyframes) {
+  _generateDefaultLayerTransition(layer, keyframe) {
     return {
       layer,
-      keyframes,
+      keyframe,
       transitions: Ember.A([{ effect: { opacity: 1 }, duration: 0 }])
     };
   },
 
-  _findKeyframeIdsByLayer(layers, layerName, state) {
+  _findKeyframeIdByLayer(layers, layerName, state) {
     const layer = get(layers, layerName).find((layer) => {
       const layerState = get(layer, 'state');
 
@@ -254,9 +272,7 @@ export default Direction.extend({
         layerState === state : this._findKeyframeIdFromArrayOrObject(layerState, state);
     }) || {};
 
-    const keyframes = get(layer, 'keyframes') || get(layer, 'keyframe');
-
-    return (typeOf(keyframes) === 'array' ? keyframes : [keyframes]).filter((id) => isPresent(id));
+    return get(layer, 'keyframe');
   },
 
   _findKeyframeIdFromArrayOrObject(layerStateOrArray, state) {

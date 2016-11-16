@@ -1,18 +1,18 @@
 import Ember from 'ember';
 import { registrant } from 'affinity-engine';
-import ResizeMixin from 'ember-resize-for-addons';
 
 const {
   Component,
   computed,
   get,
+  isBlank,
   isPresent
 } = Ember;
 
 const { run: { next } } = Ember;
 const { String: { htmlSafe } } = Ember;
 
-export default Component.extend(ResizeMixin, {
+export default Component.extend({
   tagName: 'img',
   attributeBindings: ['alt', 'src', 'style'],
   classNames: ['ae-stage-direction-image-frame'],
@@ -20,29 +20,6 @@ export default Component.extend(ResizeMixin, {
 
   preloader: registrant('affinity-engine/preloader'),
   translator: registrant('affinity-engine/translator'),
-
-  didRender(...args) {
-    this._super(...args);
-
-    this.$().on('load', () => {
-      next(() => this._fixParentWidth());
-    });
-  },
-
-  didResize(...args) {
-    this._super(...args);
-
-    this._fixParentWidth();
-  },
-
-  _fixParentWidth() {
-    if (get(this, 'isBase')) {
-      const $layer = this.$().closest('.ae-stage-direction-image-layer-base');
-
-      $layer.css('width', '');
-      $layer.width(this.$().width());
-    }
-  },
 
   style: computed('height', {
     get() {
