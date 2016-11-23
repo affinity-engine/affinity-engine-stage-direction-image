@@ -189,20 +189,11 @@ export default Direction.extend({
     if (isBlank(transition.crossFade.in.duration)) {
       transition.crossFade.in.duration = duration;
     }
-    if (isBlank(transition.crossFade.in.easing)) {
-      transition.crossFade.in.easing = 'ease-out'
-    }
     if (isBlank(transition.crossFade.out)) {
       transition.crossFade.out = { };
     }
     if (isBlank(transition.crossFade.out.effect)) {
       transition.crossFade.out.effect = { opacity: 0 };
-    }
-    if (isBlank(transition.crossFade.out.duration)) {
-      transition.crossFade.out.duration = duration * 1.75;
-    }
-    if (isBlank(transition.crossFade.out.easing)) {
-      transition.crossFade.out.easing = 'ease-in';
     }
 
     return transition;

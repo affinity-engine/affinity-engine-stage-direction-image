@@ -5,13 +5,10 @@ import { ResizeMixin } from 'affinity-engine';
 const {
   Component,
   computed,
-  get,
-  isPresent,
-  set
+  get
 } = Ember;
 
 const { equal } = computed;
-const { String: { htmlSafe } } = Ember;
 
 export default Component.extend(ResizeMixin, {
   layout,
