@@ -33,8 +33,8 @@ export default Direction.extend({
     'attrs',
     'attrs.keyframe',
     'attrs.keyframeParent',
-    'attrs.links',
-    'attrs.fixtures.image',
+    'links.attrs',
+    'links.fixtures.image',
     'config.attrs.component.stage.direction.image',
     'config.attrs.component.stage',
     'config.attrs.global'
