@@ -3,4 +3,4 @@
 
 # affinity-engine-stage-direction-image
 
-You'll find the interactive guides [here](http://www.ember.engine/learn/stage/directions/image).
+You'll find the interactive guides [here](http://www.affinityengine.org/components/stage/directions/image).

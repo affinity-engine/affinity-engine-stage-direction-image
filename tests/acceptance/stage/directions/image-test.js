@@ -16,6 +16,8 @@ moduleForAcceptance('Acceptance | affinity-engine/stage/directions/image', {
 test('Affinity Engine | stage | Directions | Image', function(assert) {
   assert.expect(27);
 
+  const done = assert.async();
+
   visit('/image').then(() => {
     assert.ok($hook('affinity_engine_stage_direction_image').length > 0, 'image is rendered by transition');
     assert.ok($hook('affinity_engine_stage_direction_image').hasClass('foofoo'), 'has custom class name');
@@ -80,5 +82,7 @@ test('Affinity Engine | stage | Directions | Image', function(assert) {
   }).then(() => {
     assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img`).length, 4, '`compose` can remove a layer');
     assert.ok(Ember.$(`${hook('affinity_engine_stage_direction_image')}:nth(3) img:nth(1)`).attr('src').match('affinity-engine/images/diy-default-lips.png'), 'it returns to the default lips');
+
+    done();
   });
 });
