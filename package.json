@@ -58,7 +58,7 @@
   },
   "ember-addon": {
     "configPath": "tests/dummy/config",
-    "demoURL": "http://www.affinityengine.org/components/stage/directions/image",
+    "demoURL": "http://www.affinityengine.org/#/components/stage/directions/image",
     "after": [
       "affinity-engine"
     ]
