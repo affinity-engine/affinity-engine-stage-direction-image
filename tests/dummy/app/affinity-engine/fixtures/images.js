@@ -23,36 +23,25 @@ export default [{
     'nose',
     'hair'
   ],
-  layers: {
-    base: [{
-      state: { pose: 'standing' },
-      keyframe: 'diy-base'
-    }],
-    blush: [{
-      state: { pose: 'standing', expression: 'embarrassed' },
-      keyframe: 'diy-blush'
-    }],
-    lips: [{
-      state: { pose: 'standing', expression: 'neutral' },
-      keyframe: 'diy-default-lips'
-    }, {
-      state: { pose: 'standing', expression: 'embarrassed' },
-      keyframe: 'diy-embarrassed-lips'
-    }],
-    eyes: [{
-      state: { pose: 'standing', expression: 'neutral' },
-      keyframe: 'diy-default-eyes'
-    }, {
-      state: { pose: 'standing', expression: 'embarrassed' },
-      keyframe: 'diy-embarrassed-eyes'
-    }],
-    nose: [{
-      state: [{ pose: 'standing', expression: 'neutral' }, { pose: 'standing', expression: 'embarrassed' }],
-      keyframe: 'diy-default-nose'
-    }],
-    hair: [{
-      state: { pose: 'standing' },
-      keyframe: 'diy-default-hair'
-    }]
-  }
+  states: [{
+    key: { pose: 'standing' },
+    layers: {
+      base: 'diy-base',
+      nose: 'diy-default-nose',
+      hair: 'diy-default-hair'
+    }
+  }, {
+    key: { pose: 'standing', expression: 'embarrassed' },
+    layers: {
+      blush: 'diy-blush',
+      lips: 'diy-embarrassed-lips',
+      eyes: 'diy-embarrassed-eyes'
+    }
+  }, {
+    key: { pose: 'standing', expression: 'neutral' },
+    layers: {
+      lips: 'diy-default-lips',
+      eyes: 'diy-default-eyes'
+    }
+  }]
 }];
