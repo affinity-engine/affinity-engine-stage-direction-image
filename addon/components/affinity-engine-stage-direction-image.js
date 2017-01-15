@@ -3,15 +3,17 @@ import layout from '../templates/components/affinity-engine-stage-direction-imag
 import { DirectableComponentMixin } from 'affinity-engine-stage';
 
 const {
-  Component
+  Component,
+  set
 } = Ember;
 
 const { computed: { alias } } = Ember;
+const { run: { later } } = Ember;
 
 export default Component.extend(DirectableComponentMixin, {
   layout,
 
-  classNames: ['ae-stage-direction-image-type'],
+  classNames: ['ae-stage-direction-image'],
   classNameBindings: ['customClassNames'],
   hook: 'affinity_engine_stage_direction_image',
 
@@ -20,13 +22,14 @@ export default Component.extend(DirectableComponentMixin, {
   customClassNames: alias('directable.customClassNames'),
   height: alias('directable.height'),
   layers: alias('directable.layers'),
+  renderMethod: alias('directable.renderMethod'),
   transitions: alias('directable.transitions'),
 
   actions: {
     compose(transition, resolve) {
-      transition.layerChanges.forEach((change) => {
-        change(resolve);
-      });
+      set(this, 'layers', transition.layers);
+
+      later(resolve, transition.duration);
     }
   }
 });

@@ -3,6 +3,7 @@ export default [{
   keyframe: 'classroom'
 }, {
   id: 'beach',
+  height: 150,
   keyframes: [{
     default: true,
     id: 'day',

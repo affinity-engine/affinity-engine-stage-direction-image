@@ -57,6 +57,7 @@ export default Direction.extend({
         height: configurable(configurationTiers, 'height'),
         keyframeParent: configurable(configurationTiers, 'keyframeParent'),
         layers: configurable(configurationTiers, 'layers'),
+        renderMethod: configurable(configurationTiers, 'renderMethod'),
         src: configurable(configurationTiers, 'src'),
         transitions: configurable(configurationTiers, 'transitions')
       };
@@ -93,6 +94,10 @@ export default Direction.extend({
     this.transition({ opacity: 0 }, ...args);
   }),
 
+  renderMethod: cmd(function(renderMethod) {
+    set(this, 'attrs.renderMethod', renderMethod);
+  }),
+
   height: cmd(function(height) {
     set(this, 'attrs.height', height);
   }),
@@ -121,76 +126,40 @@ export default Direction.extend({
     const transition = typeOf(durationOrTransition) === 'object' ? durationOrTransition : {};
     const crossFadeTransition = this._generateCrossfade(duration, transition);
     const image = get(this, 'attrs.keyframeParent');
+    const layers = [{
+      layer: 'base',
+      keyframe: this._findFixture('keyframes', this._findKeyframeIdByKey(get(image, 'keyframes'), key))
+    }];
+    transition.crossFade.cb = () => {
+      set(this, 'attrs.layers', layers);
+    }
 
-    const layerChanges = get(this, 'attrs.layers').map((layer) => {
-      const oldKeyframeId = get(layer, 'keyframe.id');
-      const newKeyframeId = this._findKeyframeIdByKey(get(image, 'keyframes'), key);
-
-      return (resolve) => {
-        if (newKeyframeId !== oldKeyframeId) {
-          const newKeyframe = this._findFixture('keyframes', newKeyframeId);
-          const layerTransition = this._crossFadeLayer(layer, newKeyframe, crossFadeTransition);
-
-          get(layer, 'transitions').pushObject(layerTransition);
-        }
-
-        later(() => { resolve(); }, duration);
-      }
-    });
-
-    get(this, 'attrs.transitions').pushObject({ external: { layerChanges } });
+    get(this, 'attrs.transitions').pushObject(transition);
   }),
 
   state: cmd({ async: true }, function(key, durationOrTransition) {
     const duration = typeOf(durationOrTransition) === 'number' ? durationOrTransition : 750;
     const transition = typeOf(durationOrTransition) === 'object' ? durationOrTransition : {};
-    const crossFadeTransition = this._generateCrossfade(duration, transition);
+
+    this._generateCrossfade(duration, transition);
 
     assign(get(this, '_state'), key);
 
     const image = get(this, 'attrs.keyframeParent');
-    const newLayers = this._findKeyframeIdsByState(image);
-
+    const layerIds = this._findKeyframeIdsByState(image);
     const layerOrder = get(image, 'layerOrder');
-    const layerChanges = get(this, 'attrs.layers').map((layer, index) => {
-      const oldKeyframeId = get(layer, 'keyframe.id');
-      const newKeyframeId = get(newLayers, layerOrder[index]);
+    const layers = get(this, 'attrs.layers').reduce((layers, layer, index) => {
+      const id = get(layerIds, layerOrder[index]);
 
-      return (resolve) => {
-        if (newKeyframeId !== oldKeyframeId) {
-          const newKeyframe = this._findFixture('keyframes', newKeyframeId);
-          const layerTransition = this._crossFadeLayer(layer, newKeyframe, crossFadeTransition);
+      layers.push(assign({}, layer, { keyframe: this._findFixture('keyframes', id) }));
 
-          get(layer, 'transitions').pushObject(layerTransition);
-        }
+      return layers;
+    }, []);
+    transition.crossFade.cb = () => {
+      set(this, 'attrs.layers', layers);
+    }
 
-        later(() => { resolve(); }, duration);
-      }
-    });
-
-    get(this, 'attrs.transitions').pushObject({ external: { layerChanges } });
-
-
-
-    // const layers = get(image, 'layers');
-    //
-    // const layerChanges = get(this, 'attrs.layers').map((layer) => {
-    //   const oldKeyframeId = get(layer, 'keyframe.id');
-    //   const newKeyframeId = this._findKeyframeIdByLayer(layers, get(layer, 'layer'), state);
-    //
-    //   return (resolve) => {
-    //     if (newKeyframeId !== oldKeyframeId) {
-    //       const newKeyframe = this._findFixture('keyframes', newKeyframeId);
-    //       const layerTransition = this._crossFadeLayer(layer, newKeyframe, crossFadeTransition);
-    //
-    //       get(layer, 'transitions').pushObject(layerTransition);
-    //     }
-    //
-    //     later(() => { resolve(); }, duration);
-    //   }
-    // });
-    //
-    // get(this, 'attrs.transitions').pushObject({ external: { layerChanges } });
+    get(this, 'attrs.transitions').pushObject(transition);
   }),
 
   _findKeyframeIdByKey(keyframes, key) {
@@ -216,6 +185,9 @@ export default Direction.extend({
     }
     if (isBlank(transition.crossFade.out)) {
       transition.crossFade.out = { };
+    }
+    if (isBlank(transition.crossFade.out.duration)) {
+      transition.crossFade.out.duration = duration;
     }
     if (isBlank(transition.crossFade.out.effect)) {
       transition.crossFade.out.effect = { opacity: 0 };

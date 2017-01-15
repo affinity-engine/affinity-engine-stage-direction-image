@@ -5,15 +5,11 @@
   didCompleteQueue=(action resolve)
   externalAction=(action "compose")
 }}
-  {{#each layers as |layer|}}
-    {{affinity-engine-stage-direction-image-layer
-      animationLibrary=animationLibrary
-      height=height
-      keyframe=layer.keyframe
-      layer=layer.layer
-      transitions=layer.transitions
-      engineId=engineId
-      stageId=stageId
-    }}
-  {{/each}}
+  {{affinity-engine-stage-direction-image-canvas
+    height=height
+    layers=layers
+    renderMethod=renderMethod
+    engineId=engineId
+    stageId=stageId
+  }}
 {{/affinity-engine-animation-box-wrapper}}

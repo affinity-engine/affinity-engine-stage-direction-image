@@ -1,71 +1,25 @@
-.ae-stage-direction-image-type, .ae-stage-direction-image-frame {
+.ae-stage-direction-image, .ae-stage-direction-image-canvas {
   @extend .ae-unselectable
 }
 
-.ae-stage-direction-image-type {
+.ae-stage-direction-image {
   position: absolute;
+  perspective: 100px;
   height: 100%;
   width: 100%;
-  perspective: 100px;
 
-  .ae-stage-direction-image-layer, .ae-animation-box-wrapper, .ae-animation-box-wrapper div {
-    height: 100%;
+  .ae-stage-direction-image-canvas {
+    display: block;
+
+    &.ae-figure {
+      z-index: 10;
+      -webkit-transform: translateX(-50%);
+      transform: translateX(-50%);
+    }
   }
 
-  .ae-stage-direction-image-frame {
+  .ae-animation-box-wrapper {
     position: absolute;
-    top: 0;
-    max-width: none;
-  }
-
-  &.ae-figure {
-    z-index: 10;
-
-
-    .ae-animation-box-wrapper {
-      position: absolute;
-      bottom: 0;
-    }
-  }
-
-  &.ae-cover {
-    display: flex;
-    height: 150%;
-    width: 150%;
-    top: -25%;
-    left: -25%;
-
-    .ae-stage-direction-image-frame, .ember-animation-box-active-instance {
-      height: 100%;
-      width: 100%;
-    }
-
-    .ae-stage-direction-image-frame {
-      object-fit: cover;
-      object-position: 50% 50%;
-
-      color: transparent;
-    }
-  }
-
-  // so that all layers will render on top of each other
-  .ae-stage-direction-image-layer {
-    position: absolute;
-    top: 0;
-  }
-
-  // if all layers are absolute, then the containing elements will have a width of 0.
-  // by making the base layer relative, it will still expand the parent elements,
-  // allowing us to use 'translateX'
-  .ae-stage-direction-image-layer-base {
-    position: relative;
-
-    .ae-animation-box-wrapper {
-      position: relative;
-    }
-
-    .ae-stage-direction-image-frame:last-of-type {
-      position: relative;
-    }
+    bottom: 0;
   }
 }

@@ -4,11 +4,7 @@ export default {
     stage: {
       direction: {
         image: {
-          classNames: {
-            base: 'ae-figure',
-            decorative: null,
-            structural: null
-          },
+          renderMethod: 'figure',
           positions: {
             center: {
               left: '50%',
