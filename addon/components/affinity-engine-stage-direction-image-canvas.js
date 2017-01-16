@@ -62,8 +62,8 @@ export default Component.extend(ResizeMixin, {
 
       this.element.height = canvasHeight;
       this.element.width = canvasWidth;
-      this.element.style.webkitTransform = `translateX(${transformPercent}%) translateY(${-1 * transformPercent}%)`;
-      this.element.style.transform = `translateX(${transformPercent}%) translateY(${-1 * transformPercent}%)`;
+      this.element.style.webkitTransform = `translateX(${transformPercent}%) translateY(${transformPercent}%)`;
+      this.element.style.transform = `translateX(${transformPercent}%) translateY(${transformPercent}%)`;
 
       images.forEach((image) => ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight));
     }
