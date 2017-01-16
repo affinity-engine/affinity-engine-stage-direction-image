@@ -8,6 +8,7 @@ const {
   computed,
   get,
   isBlank,
+  isPresent,
   set,
   typeOf
 } = Ember;
@@ -125,8 +126,9 @@ export default Direction.extend({
     const tier = Ember.A(get(this, '_configurationTiers')).find((tier) => {
       return get(this, `${tier}.defaultPosition`);
     });
+    const position = get(this, `${tier}.defaultPosition`);
 
-    this.position(get(this, `${tier}.defaultPosition`));
+    if (isPresent(position)) this.position(position);
   },
 
   keyframe: cmd({ async: true }, function(key, durationOrTransition) {
