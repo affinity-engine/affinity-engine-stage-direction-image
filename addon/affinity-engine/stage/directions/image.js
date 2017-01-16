@@ -12,8 +12,6 @@ const {
   typeOf
 } = Ember;
 
-const { run: { later } } = Ember;
-
 export default Direction.extend({
   componentPath: 'affinity-engine-stage-direction-image',
   keyframeParentCategory: 'images',
@@ -124,7 +122,7 @@ export default Direction.extend({
   keyframe: cmd({ async: true }, function(key, durationOrTransition) {
     const duration = typeOf(durationOrTransition) === 'number' ? durationOrTransition : 750;
     const transition = typeOf(durationOrTransition) === 'object' ? durationOrTransition : {};
-    const crossFadeTransition = this._generateCrossfade(duration, transition);
+    this._generateCrossfade(duration, transition);
     const image = get(this, 'attrs.keyframeParent');
     const layers = [{
       layer: 'base',
