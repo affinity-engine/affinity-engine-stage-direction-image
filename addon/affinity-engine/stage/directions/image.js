@@ -68,6 +68,8 @@ export default Direction.extend({
     this._linkFixture(image);
     set(this, 'attrs.keyframeParent', image);
     set(this, 'attrs.layers', this._findDefaultLayers(image));
+
+    this._applyDefaultPositions();
   }),
 
   caption: cmd(function(caption) {
@@ -118,6 +120,14 @@ export default Direction.extend({
 
     this.transition(effect, duration, options);
   }),
+
+  _applyDefaultPositions() {
+    const tier = Ember.A(get(this, '_configurationTiers')).find((tier) => {
+      return get(this, `${tier}.defaultPosition`);
+    });
+
+    this.position(get(this, `${tier}.defaultPosition`));
+  },
 
   keyframe: cmd({ async: true }, function(key, durationOrTransition) {
     const duration = typeOf(durationOrTransition) === 'number' ? durationOrTransition : 750;

@@ -6,9 +6,9 @@ const {
   Component,
   computed,
   get,
+  isPresent,
   observer,
   on,
-  set,
   typeOf
 } = Ember;
 
@@ -17,34 +17,40 @@ const { computed: { readOnly } } = Ember;
 export default Component.extend(ResizeMixin, {
   tagName: 'canvas',
   classNames: ['ae-stage-direction-image-canvas'],
-  classNameBindings: ['canvasClass'],
-  canvasClass: '',
 
   preloader: registrant('affinity-engine/preloader'),
 
   _preloaderIsPlaceholder: readOnly('preloader.isPlaceholder'),
 
+  $stage: computed({
+    get() {
+      return this.$().closest('.ae-stage');
+    }
+  }),
+
   _renderMethods: {
     figure(images) {
+      const $stage = get(this, '$stage');
       const ctx = this.element.getContext('2d');
       const { height, width } = images[0];
       const heightRatio = (get(this, 'height') || 100) / 100;
-      const canvasHeight = window.innerHeight * heightRatio;
+      const canvasHeight = $stage.height() * heightRatio;
       const canvasWidth = width * (canvasHeight / height)
 
       this.element.height = canvasHeight;
       this.element.width = canvasWidth;
-      set(this, 'canvasClass', 'ae-figure');
+      this.element.style.zIndex = 10;
 
       images.forEach((image) => ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight));
     },
     cover(images) {
+      const $stage = get(this, '$stage');
       const ctx = this.element.getContext('2d');
       const { height, width } = images[0];
       const heightMultiplier = (get(this, 'height') || 100) / 100;
       const transformPercent = heightMultiplier > 1 ? ((1 - heightMultiplier) / 3) * 100 : 0;
-      let canvasHeight = window.innerHeight * heightMultiplier;
-      let canvasWidth = window.innerWidth * heightMultiplier;
+      let canvasHeight = $stage.height() * heightMultiplier;
+      let canvasWidth = $stage.width() * heightMultiplier;
       const heightRatio = height / canvasHeight;
       const widthRatio = width / canvasWidth;
 
@@ -89,7 +95,7 @@ export default Component.extend(ResizeMixin, {
     }, []);
 
     Ember.RSVP.all(promises).then((resolutions) => {
-      const images = resolutions.map((resolution) => resolution.path[0]);
+      const images = resolutions.map((resolution) => resolution.path ? resolution.path[0] : resolution);
 
       get(this, '_renderMethod').bind(this)(images);
     })
@@ -111,10 +117,9 @@ export default Component.extend(ResizeMixin, {
 
   _getImageAsBlob(keyframe) {
     const preloader = get(this, 'preloader');
-    const imageId = preloader.idFor(keyframe, get(keyframe, 'src'));
-    const blob = preloader.getElement(imageId, true);
-    const urlCreator = window.URL || window.webkitURL;
+    const imageId = preloader.idFor(keyframe, 'src');
+    const image = preloader.getElement(imageId);
 
-    return Ember.RSVP.resolve(blob ? urlCreator.createObjectURL(blob) : this._getImageAsElement(keyframe));
+    return isPresent(image) ? new Ember.RSVP.resolve(image) : this._getImageAsElement(keyframe);
   }
 });

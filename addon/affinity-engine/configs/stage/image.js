@@ -4,7 +4,9 @@ export default {
     stage: {
       direction: {
         image: {
+          classNames: { structural: '', decorative: '' },
           renderMethod: 'figure',
+          defaultPosition: 'bottom',
           positions: {
             center: {
               left: '50%',

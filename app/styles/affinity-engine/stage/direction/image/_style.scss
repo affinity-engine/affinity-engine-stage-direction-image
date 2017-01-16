@@ -10,14 +10,9 @@
 
   .ae-stage-direction-image-canvas {
     display: block;
-
-    &.ae-figure {
-      z-index: 10;
-    }
   }
 
   .ae-animation-box-wrapper {
     position: absolute;
-    bottom: 0;
   }
 }
