@@ -37,11 +37,15 @@ export default Component.extend(ResizeMixin, {
       const canvasHeight = $stage.height() * heightRatio;
       const canvasWidth = width * (canvasHeight / height)
 
-      this.element.height = canvasHeight;
-      this.element.width = canvasWidth;
-      this.element.style.zIndex = 10;
+      requestAnimationFrame(() => {
+        this.element.height = canvasHeight;
+        this.element.width = canvasWidth;
+        this.element.style.zIndex = 10;
 
-      images.forEach((image) => ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight));
+        images.forEach((image) => {
+          ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight);
+        });
+      });
     },
     cover(images) {
       const $stage = get(this, '$stage');
@@ -60,12 +64,14 @@ export default Component.extend(ResizeMixin, {
         canvasHeight = height / widthRatio;
       }
 
-      this.element.height = canvasHeight;
-      this.element.width = canvasWidth;
-      this.element.style.webkitTransform = `translateX(${transformPercent}%) translateY(${transformPercent}%)`;
-      this.element.style.transform = `translateX(${transformPercent}%) translateY(${transformPercent}%)`;
+      requestAnimationFrame(() => {
+        this.element.height = canvasHeight;
+        this.element.width = canvasWidth;
+        this.element.style.webkitTransform = `translateX(${transformPercent}%) translateY(${transformPercent}%)`;
+        this.element.style.transform = `translateX(${transformPercent}%) translateY(${transformPercent}%)`;
 
-      images.forEach((image) => ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight));
+        images.forEach((image) => ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight));
+      });
     }
   },
 

@@ -9,6 +9,7 @@
   width: 100%;
 
   .ae-stage-direction-image-canvas {
+    @extend .ae-clickable;
     display: block;
   }
 
