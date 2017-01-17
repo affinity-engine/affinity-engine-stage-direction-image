@@ -4,10 +4,11 @@ import { DirectableComponentMixin } from 'affinity-engine-stage';
 
 const {
   Component,
+  get,
   set
 } = Ember;
 
-const { computed: { alias } } = Ember;
+const { computed: { alias, notEmpty } } = Ember;
 const { run: { later } } = Ember;
 
 export default Component.extend(DirectableComponentMixin, {
@@ -24,12 +25,15 @@ export default Component.extend(DirectableComponentMixin, {
   layers: alias('directable.layers'),
   renderMethod: alias('directable.renderMethod'),
   transitions: alias('directable.transitions'),
+  onClick: alias('directable.onClick'),
+
+  clickable: notEmpty('onClick'),
 
   actions: {
-    compose(transition, resolve) {
-      set(this, 'layers', transition.layers);
+    clicked(event) {
+      const onClick = get(this, 'onClick');
 
-      later(resolve, transition.duration);
+      if (onClick) onClick(event);
     }
   }
 });

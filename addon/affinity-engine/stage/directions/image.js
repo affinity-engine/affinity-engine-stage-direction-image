@@ -56,6 +56,7 @@ export default Direction.extend({
         height: configurable(configurationTiers, 'height'),
         keyframeParent: configurable(configurationTiers, 'keyframeParent'),
         layers: configurable(configurationTiers, 'layers'),
+        onClick: configurable(configurationTiers, 'onClick'),
         renderMethod: configurable(configurationTiers, 'renderMethod'),
         src: configurable(configurationTiers, 'src'),
         transitions: configurable(configurationTiers, 'transitions')
@@ -101,6 +102,10 @@ export default Direction.extend({
 
   height: cmd(function(height) {
     set(this, 'attrs.height', height);
+  }),
+
+  onClick: cmd(function(onClick) {
+    set(this, 'attrs.onClick', onClick);
   }),
 
   transition: cmd({ async: true }, function(effect, duration, options = {}) {

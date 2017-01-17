@@ -9,14 +9,17 @@ const {
   isPresent,
   observer,
   on,
+  set,
   typeOf
 } = Ember;
 
 const { computed: { readOnly } } = Ember;
+const { run: { next } } = Ember;
 
 export default Component.extend(ResizeMixin, {
   tagName: 'canvas',
   classNames: ['ae-stage-direction-image-canvas'],
+  classNameBindings: ['shouldBePointer:ae-pointed'],
 
   preloader: registrant('affinity-engine/preloader'),
 
@@ -25,6 +28,12 @@ export default Component.extend(ResizeMixin, {
   $stage: computed({
     get() {
       return this.$().closest('.ae-stage');
+    }
+  }),
+
+  shouldBePointer: computed('clickable', 'inClickableRegion', {
+    get() {
+      return get(this, 'clickable') && get(this, 'inClickableRegion');
     }
   }),
 
@@ -87,6 +96,45 @@ export default Component.extend(ResizeMixin, {
     this._super(...args);
 
     this._drawImage();
+  },
+
+  mouseMove(event) {
+    this._super(event);
+
+    if (!get(this, 'clickable')) return;
+
+    const context = this.element.getContext('2d');
+    const rect = this.element.getBoundingClientRect();
+    const x = Math.round(event.clientX - rect.left);
+    const y = Math.round(event.clientY - rect.top);
+
+    const pixelData = context.getImageData(x, y, 1, 1).data;
+
+    if (pixelData[3] === 0) {
+      set(this, 'inClickableRegion', false);
+    } else {
+      set(this, 'inClickableRegion', true);
+    }
+  },
+
+  click(event) {
+    this._super(event);
+
+    const context = this.element.getContext('2d');
+    const rect = this.element.getBoundingClientRect();
+    const x = Math.round(event.clientX - rect.left);
+    const y = Math.round(event.clientY - rect.top);
+
+    const pixelData = context.getImageData(x, y, 1, 1).data;
+
+    if (pixelData[3] === 0) {
+      this.element.style.pointerEvents = 'none';
+      document.elementFromPoint(event.clientX, event.clientY).
+        dispatchEvent(new MouseEvent('click', event.originalEvent));
+      this.element.style.pointerEvents = 'auto';
+    } else {
+      this.attrs.clicked(event);
+    }
   },
 
   _drawImage: on('didInsertElement', observer('layers.@each.keyframe', function() {

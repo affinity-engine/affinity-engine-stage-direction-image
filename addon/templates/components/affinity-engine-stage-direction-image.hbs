@@ -3,13 +3,14 @@
   classNames="ae-hidden ae-animation-box-wrapper"
   transitions=transitions
   didCompleteQueue=(action resolve)
-  externalAction=(action "compose")
 }}
   {{affinity-engine-stage-direction-image-canvas
+    clickable=clickable
     height=height
     layers=layers
     renderMethod=renderMethod
     engineId=engineId
     stageId=stageId
+    clicked=(action "clicked")
   }}
 {{/affinity-engine-animation-box-wrapper}}

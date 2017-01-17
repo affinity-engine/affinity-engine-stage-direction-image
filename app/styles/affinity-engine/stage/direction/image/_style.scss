@@ -11,6 +11,10 @@
   .ae-stage-direction-image-canvas {
     @extend .ae-clickable;
     display: block;
+
+    &.ae-pointed {
+      cursor: pointer;
+    }
   }
 
   .ae-animation-box-wrapper {

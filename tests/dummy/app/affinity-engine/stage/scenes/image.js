@@ -32,7 +32,7 @@ export default Scene.extend({
     beach.keyframe('night');
 
     yield step();
-    const diy = script.image('diy').transition({ left: '50%' }).fadeIn();
+    const diy = script.image('diy').transition({ left: '50%' }).fadeIn().onClick(() => console.log('foo'));
 
     yield step();
     diy.position('dummy1');
