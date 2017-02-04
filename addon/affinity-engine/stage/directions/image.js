@@ -193,7 +193,7 @@ export default Direction.extend({
       transition.crossFade.in = { };
     }
     if (isBlank(transition.crossFade.in.effect)) {
-      transition.crossFade.in.effect = { opacity: [1, 0] };
+      transition.crossFade.in.effect = { opacity: 1 };
     }
     if (isBlank(transition.crossFade.in.duration)) {
       transition.crossFade.in.duration = duration;
