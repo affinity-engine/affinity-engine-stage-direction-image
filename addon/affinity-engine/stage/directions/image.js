@@ -152,11 +152,11 @@ export default Direction.extend({
     get(this, 'attrs.transitions').pushObject(transition);
   }),
 
-  state: cmd({ async: true }, function(key, durationOrTransition) {
+  state: cmd({ async: true }, function(key, durationOrTransition, twoWayFade) {
     const duration = typeOf(durationOrTransition) === 'number' ? durationOrTransition : 750;
     const transition = typeOf(durationOrTransition) === 'object' ? durationOrTransition : {};
 
-    this._generateCrossfade(duration, transition);
+    this._generateCrossfade(duration, transition, twoWayFade);
 
     assign(get(this, '_state'), key);
 
@@ -185,7 +185,7 @@ export default Direction.extend({
     return a.length !== b.length || a.some((id, index) => id !== b[index])
   },
 
-  _generateCrossfade(duration, transition) {
+  _generateCrossfade(duration, transition, twoWayFade) {
     if (isBlank(transition.crossFade)) {
       transition.crossFade = {};
     }
@@ -196,13 +196,13 @@ export default Direction.extend({
       transition.crossFade.in.effect = { opacity: 1 };
     }
     if (isBlank(transition.crossFade.in.duration)) {
-      transition.crossFade.in.duration = duration;
+      transition.crossFade.in.duration = twoWayFade ? duration : 0;
     }
     if (isBlank(transition.crossFade.out)) {
       transition.crossFade.out = { };
     }
     if (isBlank(transition.crossFade.out.duration)) {
-      transition.crossFade.out.duration = duration;
+      transition.crossFade.out.duration = duration
     }
     if (isBlank(transition.crossFade.out.effect)) {
       transition.crossFade.out.effect = { opacity: 0 };
