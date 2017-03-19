@@ -155,10 +155,13 @@ export default Direction.extend({
   state: cmd({ async: true }, function(key, durationOrTransition, twoWayFade) {
     const duration = typeOf(durationOrTransition) === 'number' ? durationOrTransition : 750;
     const transition = typeOf(durationOrTransition) === 'object' ? durationOrTransition : {};
+    const state = get(this, '_state');
+
+    if (Object.keys(key).every((id) => key[id] === state[id])) { return; }
 
     this._generateCrossfade(duration, transition, twoWayFade);
 
-    assign(get(this, '_state'), key);
+    assign(state, key);
 
     const image = get(this, 'attrs.keyframeParent');
     const layerIds = this._findKeyframeIdsByState(image);
