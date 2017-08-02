@@ -1,6 +1,6 @@
 {
   "name": "affinity-engine-stage-direction-image",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Add images to Affinity Engine Stage",
   "keywords": [
     "ember-addon",
@@ -29,7 +29,7 @@
     "affinity-engine-animator-velocity": "^0.1.0",
     "affinity-engine-curtain": "^0.1.0",
     "affinity-engine-preloader-createjs": "^0.1.0",
-    "affinity-engine-stage": "^0.1.0",
+    "affinity-engine-stage": "^0.2.0",
     "affinity-engine-translator-ember-intl": "^0.1.0",
     "babel-eslint": "^6.0.4",
     "broccoli-asset-rev": "^2.4.5",

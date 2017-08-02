@@ -5,7 +5,7 @@ export default Scene.extend({
   name: 'Image Direction Test',
 
   start: task(function * (script) {
-    const classroom = script.image('classroom').classNames('foofoo');
+    const classroom = script.image('classroom', { classNames: 'foofoo' });
 
     yield step();
     yield classroom.fadeIn();
@@ -26,13 +26,13 @@ export default Scene.extend({
     yield classroom2.transition({ opacity: 0.6 });
 
     yield step();
-    const beach = yield script.image('beach').renderMethod('cover').fadeIn();
+    const beach = yield script.image('beach', { renderMethod: 'cover' }).fadeIn();
 
     yield step();
     beach.keyframe('night');
 
     yield step();
-    const diy = script.image('diy').transition({ left: '50%' }).fadeIn().onClick(() => console.log('foo'));
+    const diy = script.image('diy', { onClick: () => window.console.log('foo') }).transition({ left: '50%' }).fadeIn();
 
     yield step();
     diy.position('dummy1');

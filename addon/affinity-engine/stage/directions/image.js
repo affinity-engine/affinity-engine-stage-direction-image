@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import multiton from 'ember-multiton-service';
-import { classNamesConfigurable, configurable, registrant } from 'affinity-engine';
+import { registrant } from 'affinity-engine';
 import { Direction, cmd } from 'affinity-engine-stage';
 
 const {
@@ -9,6 +9,7 @@ const {
   get,
   isBlank,
   isPresent,
+  merge,
   set,
   typeOf
 } = Ember;
@@ -18,10 +19,6 @@ export default Direction.extend({
   keyframeParentCategory: 'images',
   layer: 'engine.stage.foreground.image',
 
-  attrs: computed(() => Ember.Object.create({
-    transitions: Ember.A()
-  })),
-
   keyframeKeys: computed(() => { return {}; }),
 
   config: multiton('affinity-engine/config', 'engineId'),
@@ -29,61 +26,31 @@ export default Direction.extend({
   preloader: registrant('affinity-engine/preloader'),
 
   _configurationTiers: [
-    'attrs',
-    'attrs.keyframe',
-    'attrs.keyframeParent',
-    'links.attrs',
+    'instanceConfig',
+    'instanceConfig.keyframe',
+    'instanceConfig.keyframeParent',
+    'links.configurations.@each',
     'links.fixtures.image',
     'config.attrs.component.stage.direction.image',
     'config.attrs.component.stage',
     'config.attrs.global'
   ],
 
-  _directableDefinition: computed('_baseImageDirectableDefinition', {
-    get() {
-      return get(this, '_baseImageDirectableDefinition');
-    }
-  }),
-
-  _baseImageDirectableDefinition: computed('_configurationTiers',  {
-    get() {
-      const configurationTiers = get(this, '_configurationTiers');
-
-      return {
-        animationLibrary: configurable(configurationTiers, 'animationLibrary'),
-        caption: configurable(configurationTiers, 'caption'),
-        customClassNames: classNamesConfigurable(configurationTiers, 'classNames'),
-        height: configurable(configurationTiers, 'height'),
-        keyframeParent: configurable(configurationTiers, 'keyframeParent'),
-        layers: configurable(configurationTiers, 'layers'),
-        onClick: configurable(configurationTiers, 'onClick'),
-        renderMethod: configurable(configurationTiers, 'renderMethod'),
-        src: configurable(configurationTiers, 'src'),
-        transitions: configurable(configurationTiers, 'transitions')
-      };
-    }
-  }),
-
-  _setup: cmd({ directable: true }, function(fixtureOrId) {
+  _setup: cmd({ render: true }, function(fixtureOrId, options) {
     const image = this._findFixture(get(this, 'keyframeParentCategory'), fixtureOrId);
 
     this._linkFixture(image);
-    set(this, 'attrs.keyframeParent', image);
-    set(this, 'attrs.layers', this._findDefaultLayers(image));
+    this.configure(merge({
+      keyframeParent: image,
+      layers: this._findDefaultLayers(image),
+      transitions: Ember.A()
+    }, options));
 
     this._applyDefaultPositions();
   }),
 
-  caption: cmd(function(caption) {
-    set(this, 'attrs.caption', caption);
-  }),
-
-  classNames: cmd(function(classNames) {
-    set(this, 'attrs.classNames', classNames);
-  }),
-
   delay: cmd({ async: true }, function(duration, options = {}) {
-    const transitions = get(this, 'attrs.transitions');
+    const transitions = this.getConfiguration('transitions');
 
     transitions.pushObject(assign({ duration }, options));
   }),
@@ -96,20 +63,8 @@ export default Direction.extend({
     this.transition({ opacity: 0 }, ...args);
   }),
 
-  renderMethod: cmd(function(renderMethod) {
-    set(this, 'attrs.renderMethod', renderMethod);
-  }),
-
-  height: cmd(function(height) {
-    set(this, 'attrs.height', height);
-  }),
-
-  onClick: cmd(function(onClick) {
-    set(this, 'attrs.onClick', onClick);
-  }),
-
-  transition: cmd({ async: true }, function(effect, duration, options = {}) {
-    const transitions = get(this, 'attrs.transitions');
+  transition: cmd({ async: true, render: true }, function(effect, duration, options = {}) {
+    const transitions = this.getConfiguration('transitions');
 
     transitions.pushObject(assign({ duration, effect }, options));
   }),
@@ -140,16 +95,16 @@ export default Direction.extend({
     const duration = typeOf(durationOrTransition) === 'number' ? durationOrTransition : 750;
     const transition = typeOf(durationOrTransition) === 'object' ? durationOrTransition : {};
     this._generateCrossfade(duration, transition);
-    const image = get(this, 'attrs.keyframeParent');
+    const image = this.getConfiguration('keyframeParent');
     const layers = [{
       layer: 'base',
       keyframe: this._findFixture('keyframes', this._findKeyframeIdByKey(get(image, 'keyframes'), key))
     }];
     transition.crossFade.cb = () => {
-      set(this, 'attrs.layers', layers);
+      this.configure('layers', layers);
     }
 
-    get(this, 'attrs.transitions').pushObject(transition);
+    this.getConfiguration('transitions').pushObject(transition);
   }),
 
   state: cmd({ async: true }, function(key, durationOrTransition, twoWayFade) {
@@ -163,10 +118,10 @@ export default Direction.extend({
 
     assign(state, key);
 
-    const image = get(this, 'attrs.keyframeParent');
+    const image = this.getConfiguration('keyframeParent');
     const layerIds = this._findKeyframeIdsByState(image);
     const layerOrder = get(image, 'layerOrder');
-    const layers = get(this, 'attrs.layers').reduce((layers, layer, index) => {
+    const layers = this.getConfiguration('layers').reduce((layers, layer, index) => {
       const id = get(layerIds, layerOrder[index]);
 
       layers.push(assign({}, layer, { keyframe: this._findFixture('keyframes', id) }));
@@ -174,10 +129,10 @@ export default Direction.extend({
       return layers;
     }, []);
     transition.crossFade.cb = () => {
-      set(this, 'attrs.layers', layers);
+      this.configure('layers', layers);
     }
 
-    get(this, 'attrs.transitions').pushObject(transition);
+    this.getConfiguration('transitions').pushObject(transition);
   }),
 
   _findKeyframeIdByKey(keyframes, key) {

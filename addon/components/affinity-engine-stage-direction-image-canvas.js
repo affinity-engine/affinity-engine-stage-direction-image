@@ -14,7 +14,6 @@ const {
 } = Ember;
 
 const { computed: { readOnly } } = Ember;
-const { run: { next } } = Ember;
 
 export default Component.extend(ResizeMixin, {
   tagName: 'canvas',
