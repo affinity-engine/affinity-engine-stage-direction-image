@@ -4,7 +4,6 @@ export default {
     stage: {
       direction: {
         image: {
-          classNames: { structural: '', decorative: '' },
           renderMethod: 'figure',
           positions: {
             center: {

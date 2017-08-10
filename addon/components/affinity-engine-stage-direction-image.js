@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import layout from '../templates/components/affinity-engine-stage-direction-image';
+import { classNames } from 'affinity-engine';
 import { DirectableComponentMixin } from 'affinity-engine-stage';
 
 const {
@@ -19,12 +20,13 @@ export default Component.extend(DirectableComponentMixin, {
   configuration: reads('direction.configuration'),
   animationLibrary: reads('configuration.animationLibrary'),
   caption: reads('configuration.caption'),
-  customClassNames: reads('configuration.classNames'),
   height: reads('configuration.height'),
   layers: reads('configuration.layers'),
   renderMethod: reads('configuration.renderMethod'),
   transitions: reads('configuration.transitions'),
   onClick: reads('configuration.onClick'),
+
+  customClassNames: classNames('configuration.classNames'),
 
   clickable: notEmpty('onClick'),
 
