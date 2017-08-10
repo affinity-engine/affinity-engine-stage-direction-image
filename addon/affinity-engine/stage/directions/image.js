@@ -26,20 +26,16 @@ export default Direction.extend({
   preloader: registrant('affinity-engine/preloader'),
 
   _configurationTiers: [
-    'instanceConfig',
-    'instanceConfig.keyframe',
-    'instanceConfig.keyframeParent',
-    'links.configurations.@each',
-    'links.fixtures.image',
-    'config.attrs.component.stage.direction.image',
-    'config.attrs.component.stage',
-    'config.attrs.global'
+    'global',
+    'component.stage',
+    'image',
+    'component.stage.direction.image'
   ],
 
   _setup: cmd({ render: true }, function(fixtureOrId, options) {
     const image = this._findFixture(get(this, 'keyframeParentCategory'), fixtureOrId);
 
-    this._linkFixture(image);
+    this.applyFixture(image);
     this.configure(merge({
       keyframeParent: image,
       layers: this._findDefaultLayers(image),
@@ -71,22 +67,14 @@ export default Direction.extend({
 
   position: cmd(function(positions, duration = 0, options = {}) {
     const effect = positions.split(' ').reduce((aggregator, position) => {
-      const nextEffectTier = Ember.A(get(this, '_configurationTiers')).find((tier) => {
-        return get(this, `${tier}.positions.${position}`);
-      });
-      const nextEffect = get(this, `${nextEffectTier}.positions.${position}`);
-
-      return assign(aggregator, nextEffect);
+      return assign(aggregator, this.getConfiguration(`positions.${position}`));
     }, {});
 
     this.transition(effect, duration, options);
   }),
 
   _applyDefaultPositions() {
-    const tier = Ember.A(get(this, '_configurationTiers')).find((tier) => {
-      return get(this, `${tier}.defaultPosition`);
-    });
-    const position = get(this, `${tier}.defaultPosition`);
+    const position = this.getConfiguration('defaultPosition');
 
     if (isPresent(position)) this.position(position);
   },
