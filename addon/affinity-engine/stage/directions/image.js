@@ -52,17 +52,15 @@ export default Direction.extend({
   }),
 
   fadeIn: cmd({ async: true }, function(...args) {
-    this.transition({ opacity: 1 }, ...args);
+    this.transition({ effect: { opacity: 1 } }, ...args);
   }),
 
   fadeOut: cmd({ async: true }, function(...args) {
-    this.transition({ opacity: 0 }, ...args);
+    this.transition({ effect: { opacity: 0 } }, ...args);
   }),
 
-  transition: cmd({ async: true, render: true }, function(effect, duration, options = {}) {
-    const transitions = this.getConfiguration('transitions');
-
-    transitions.pushObject(assign({ duration, effect }, options));
+  transition: cmd({ async: true, render: true }, function(options = {}) {
+    this.getConfiguration('transitions').pushObject(options);
   }),
 
   position: cmd(function(positions, duration = 0, options = {}) {
@@ -70,7 +68,7 @@ export default Direction.extend({
       return assign(aggregator, this.getConfiguration(`positions.${position}`));
     }, {});
 
-    this.transition(effect, duration, options);
+    this.transition(assign({ effect, duration }, options));
   }),
 
   _applyDefaultPositions() {
