@@ -17,9 +17,9 @@ export default Component.extend(DirectableComponentMixin, {
   classNameBindings: ['customClassNames'],
   hook: 'affinity_engine_stage_direction_image',
 
-  configuration: reads('direction.configuration'),
-  animationLibrary: reads('configuration.animationLibrary'),
-  caption: reads('configuration.caption'),
+  configuration: reads('direction.configuration.attrs'),
+  alt: reads('configuration.alt'),
+  animator: reads('configuration.animator'),
   height: reads('configuration.height'),
   layers: reads('configuration.layers'),
   renderMethod: reads('configuration.renderMethod'),

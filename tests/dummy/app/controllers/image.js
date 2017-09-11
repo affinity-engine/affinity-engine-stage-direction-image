@@ -6,20 +6,15 @@ const { Controller } = Ember;
 
 export default Controller.extend({
   config: {
-    global: {
-      animationLibrary: 'velocity',
-      transitions: Ember.A()
-    },
     component: {
       stage: {
         direction: {
           image: {
-            transition: {
-              duration: 1000
-            },
-            positions: {
-              dummy1: {
-                margin: '10px'
+            attrs: {
+              positions: {
+                dummy1: {
+                  margin: '10px'
+                }
               }
             }
           }

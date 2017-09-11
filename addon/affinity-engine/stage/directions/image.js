@@ -17,7 +17,6 @@ const {
 export default Direction.extend({
   componentPath: 'affinity-engine-stage-direction-image',
   keyframeParentCategory: 'images',
-  layer: 'engine.stage.foreground.image',
 
   keyframeKeys: computed(() => { return {}; }),
 
@@ -26,10 +25,11 @@ export default Direction.extend({
   preloader: registrant('affinity-engine/preloader'),
 
   _configurationTiers: [
-    'global',
-    'component.stage',
+    'component.stage.direction.image',
     'image',
-    'component.stage.direction.image'
+    'component.stage.direction.every',
+    'component.stage.every',
+    'children'
   ],
 
   _setup: cmd({ render: true }, function(fixtureOrId, options) {
@@ -84,7 +84,7 @@ export default Direction.extend({
     const image = this.getConfiguration('keyframeParent');
     const layers = [{
       layer: 'base',
-      keyframe: this._findFixture('keyframes', this._findKeyframeIdByKey(get(image, 'keyframes'), key))
+      keyframe: this._findFixture('keyframes', this._findKeyframeIdByKey(get(image, 'attrs.keyframes'), key))
     }];
     transition.crossFade.cb = () => {
       this.configure('layers', layers);
@@ -106,7 +106,7 @@ export default Direction.extend({
 
     const image = this.getConfiguration('keyframeParent');
     const layerIds = this._findKeyframeIdsByState(image);
-    const layerOrder = get(image, 'layerOrder');
+    const layerOrder = get(image, 'attrs.layerOrder');
     const layers = this.getConfiguration('layers').reduce((layers, layer, index) => {
       const id = get(layerIds, layerOrder[index]);
 
@@ -161,10 +161,7 @@ export default Direction.extend({
     };
 
     if (isBlank(keyframe)) {
-      layerTransition.crossFade.out = {
-        ...layerTransition.crossFade.out,
-        static: true
-      };
+      layerTransition.crossFade.out.static = true;
     }
 
     layerTransition.crossFade.cb = () => {
@@ -175,13 +172,13 @@ export default Direction.extend({
   },
 
   _findDefaultLayers(image) {
-    return isBlank(get(image, 'states')) ?
+    return isBlank(get(image, 'attrs.states')) ?
       this._findDefaultLayersByKeyframe(image) :
       this._findDefaultLayersByState(image);
   },
 
   _findDefaultLayersByKeyframe(image) {
-    const keyframes = get(image, 'keyframe') || get(image, 'keyframes');
+    const keyframes = get(image, 'attrs.keyframe') || get(image, 'attrs.keyframes');
     const keyframeId = typeOf(keyframes) === 'array' ?
       keyframes.find((frame) => get(frame, 'default')).keyframe :
       keyframes;
@@ -190,13 +187,13 @@ export default Direction.extend({
   },
 
   _findDefaultLayersByState(image) {
-    const defaultState = assign({}, get(image, 'defaultState'));
+    const defaultState = assign({}, get(image, 'attrs.defaultState'));
 
     set(this, '_state', defaultState);
 
     const layers = this._findKeyframeIdsByState(image);
 
-    return get(image, 'layerOrder').map((layerName) => {
+    return get(image, 'attrs.layerOrder').map((layerName) => {
       const keyframeId = get(layers, layerName);
       const keyframe = this._findFixture('keyframes', keyframeId);
 
@@ -207,7 +204,7 @@ export default Direction.extend({
   _findKeyframeIdsByState(image) {
     const idealState = get(this, '_state');
 
-    return get(image, 'states').reduce((layers, state) => {
+    return get(image, 'attrs.states').reduce((layers, state) => {
       if (Object.keys(idealState).every((key) => !state.key[key] || state.key[key] === idealState[key])) {
         assign(layers, state.layers);
       }
