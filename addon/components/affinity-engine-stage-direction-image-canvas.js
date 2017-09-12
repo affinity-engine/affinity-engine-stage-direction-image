@@ -36,12 +36,60 @@ export default Component.extend(ResizeMixin, {
     }
   }),
 
+  _heightForMedia: computed('height', {
+    get() {
+      const height = get(this, 'height');
+
+      if (typeOf(height) === 'object') {
+        return Object.keys(height).reduce((accumulator, key) => {
+          if (key.includes('@media') && this._mediaQueryIsValid(key)) {
+            return get(height, key);
+          }
+
+          return accumulator;
+        }, get(height, 'default'));
+      } else {
+        return height || 100;
+      }
+    }
+  }),
+
+  _mediaQueryIsValid(string) {
+    return string.match(/\(([^)]+?)\)/g).every((query) => {
+      const [property, value] = query.substring(1, query.length - 1).split(':');
+
+      switch (property) {
+        case 'min-height': return this._hasMinHeight(value);
+        case 'max-height': return this._hasMaxHeight(value);
+        case 'min-width': return this._hasMinWidth(value);
+        case 'max-width': return this._hasMaxWidth(value);
+        default: return false;
+      }
+    });
+  },
+
+  _hasMinHeight(value) {
+    return get(this, '$stage').height() >= parseInt(value, 10);
+  },
+
+  _hasMaxHeight(value) {
+    return get(this, '$stage').height() <= parseInt(value, 10);
+  },
+
+  _hasMinWidth(value) {
+    return get(this, '$stage').width() >= parseInt(value, 10);
+  },
+
+  _hasMaxWidth(value) {
+    return get(this, '$stage').width() <= parseInt(value, 10);
+  },
+
   _renderMethods: {
     figure(images) {
       const $stage = get(this, '$stage');
       const ctx = this.element.getContext('2d');
       const { height, width } = images[0];
-      const heightRatio = (get(this, 'height') || 100) / 100;
+      const heightRatio = get(this, '_heightForMedia') / 100;
       const canvasHeight = $stage.height() * heightRatio;
       const canvasWidth = width * (canvasHeight / height)
 
@@ -59,7 +107,7 @@ export default Component.extend(ResizeMixin, {
       const $stage = get(this, '$stage');
       const ctx = this.element.getContext('2d');
       const { height, width } = images[0];
-      const heightMultiplier = (get(this, 'height') || 100) / 100;
+      const heightMultiplier = get(this, '_heightForMedia') / 100;
       const transformPercent = heightMultiplier > 1 ? ((1 - heightMultiplier) / 3) * 100 : 0;
       let canvasHeight = $stage.height() * heightMultiplier;
       let canvasWidth = $stage.width() * heightMultiplier;
