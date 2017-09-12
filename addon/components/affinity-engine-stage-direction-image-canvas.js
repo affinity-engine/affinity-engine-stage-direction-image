@@ -142,6 +142,7 @@ export default Component.extend(ResizeMixin, {
   didResize(...args) {
     this._super(...args);
 
+    this.notifyPropertyChange('_heightForMedia');
     this._drawImage();
   },
 
