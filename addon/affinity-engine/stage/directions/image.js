@@ -27,9 +27,9 @@ export default Direction.extend({
   _configurationTiers: [
     'component.stage.direction.image',
     'image',
-    'component.stage.direction.every',
-    'component.stage.every',
-    'children'
+    'component.stage.direction.all',
+    'component.stage.all',
+    'all'
   ],
 
   _setup: cmd({ render: true }, function(fixtureOrId, options) {
