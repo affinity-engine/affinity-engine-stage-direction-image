@@ -68,6 +68,8 @@ export default Direction.extend({
       return assign(aggregator, this.getConfiguration(`positions.${position}`));
     }, {});
 
+    if (isBlank(options.duration)) options.duration = 0;
+
     this.transition(assign({ effect }, options));
   }),
 
