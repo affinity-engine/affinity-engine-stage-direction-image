@@ -51,12 +51,12 @@ export default Direction.extend({
     transitions.pushObject(assign({ duration }, options));
   }),
 
-  fadeIn: cmd({ async: true }, function(...args) {
-    this.transition({ effect: { opacity: 1 } }, ...args);
+  fadeIn: cmd({ async: true }, function(options = {}) {
+    this.transition(assign({ effect: { opacity: 1 } }, options));
   }),
 
-  fadeOut: cmd({ async: true }, function(...args) {
-    this.transition({ effect: { opacity: 0 } }, ...args);
+  fadeOut: cmd({ async: true }, function(options = {}) {
+    this.transition(assign({ effect: { opacity: 0 } }, options));
   }),
 
   transition: cmd({ async: true, render: true }, function(options = {}) {
