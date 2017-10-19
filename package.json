@@ -1,6 +1,6 @@
 {
   "name": "affinity-engine-stage-direction-image",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Add images to Affinity Engine Stage",
   "keywords": [
     "ember-addon",

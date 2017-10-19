@@ -63,12 +63,12 @@ export default Direction.extend({
     this.getConfiguration('transitions').pushObject(options);
   }),
 
-  position: cmd(function(positions, duration = 0, options = {}) {
+  position: cmd(function(positions, options = {}) {
     const effect = positions.split(' ').reduce((aggregator, position) => {
       return assign(aggregator, this.getConfiguration(`positions.${position}`));
     }, {});
 
-    this.transition(assign({ effect, duration }, options));
+    this.transition(assign({ effect }, options));
   }),
 
   _applyDefaultPositions() {
