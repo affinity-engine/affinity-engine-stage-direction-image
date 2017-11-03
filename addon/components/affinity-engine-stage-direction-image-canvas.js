@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import { registrant } from 'affinity-engine';
 import { ResizeMixin } from 'affinity-engine';
+import { task, timeout } from 'ember-concurrency';
 
 const {
   Component,
@@ -168,6 +169,10 @@ export default Component.extend(ResizeMixin, {
   click(event) {
     this._super(event);
 
+    get(this, '_clickTask').perform(event);
+  },
+
+  _clickTask: task(function * (event) {
     const context = this.element.getContext('2d');
     const rect = this.element.getBoundingClientRect();
     const x = Math.round(event.clientX - rect.left);
@@ -179,11 +184,12 @@ export default Component.extend(ResizeMixin, {
       this.element.style.pointerEvents = 'none';
       document.elementFromPoint(event.clientX, event.clientY).
         dispatchEvent(new MouseEvent('click', event.originalEvent));
+      yield timeout(10);
       this.element.style.pointerEvents = 'auto';
     } else {
       this.attrs.clicked(event);
     }
-  },
+  }).drop(),
 
   _drawImage: on('didInsertElement', observer('layers.@each.keyframe', function() {
     const promises = get(this, 'layers').reduce((promises, layer) => {
